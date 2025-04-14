@@ -42,3 +42,5 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("✅ Sidebar toggle and close logic loaded.");
 });
 
+console.log("Toggle:", toggleBtn);
+console.log("Sidebar:", sidebar);
