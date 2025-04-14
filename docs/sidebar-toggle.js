@@ -1,46 +1,52 @@
+function waitForElement(selector, callback, timeout = 10000) {
+  const start = Date.now();
+  const interval = setInterval(() => {
+    const element = document.querySelector(selector);
+    if (element) {
+      clearInterval(interval);
+      callback(element);
+    } else if (Date.now() - start > timeout) {
+      clearInterval(interval);
+      console.warn("❌ Timeout waiting for", selector);
+    }
+  }, 100);
+}
+
 document.addEventListener("DOMContentLoaded", function () {
-  const sidebar = document.getElementById("customSidebar");
-  const toggleButton = document.getElementById("sidebarToggle");
+  waitForElement("#sidebarToggle", () => {
+    waitForElement("#customSidebar", () => {
+      const toggleButton = document.getElementById("sidebarToggle");
+      const sidebar = document.getElementById("customSidebar");
 
-  if (!sidebar || !toggleButton) {
-    console.warn("Sidebar or toggle button not found.");
-    return;
-  }
+      // Set sidebar hidden by default
+      sidebar.style.transform = "translateX(100%)";
 
-  // Ensure the sidebar starts hidden (offscreen to the right)
-  sidebar.style.transform = "translateX(100%)";
+      toggleButton.addEventListener("click", () => {
+        sidebar.style.transform = "translateX(0)";
+      });
 
-  // Open sidebar
-  toggleButton.addEventListener("click", () => {
-    sidebar.style.transform = "translateX(0)";
+      const closeBtn = document.createElement("button");
+      closeBtn.textContent = "✖";
+      closeBtn.className = "close-btn";
+      closeBtn.style.cssText = `
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: inherit;
+      `;
+      closeBtn.addEventListener("click", () => {
+        sidebar.style.transform = "translateX(100%)";
+      });
+
+      if (!sidebar.querySelector(".close-btn")) {
+        sidebar.insertBefore(closeBtn, sidebar.firstChild);
+      }
+
+      console.log("✅ Sidebar toggle and close logic fully initialized.");
+    });
   });
-
-  // Add close button to the top of the sidebar
-  const closeBtn = document.createElement("button");
-  closeBtn.textContent = "✖";
-  closeBtn.className = "close-btn";
-  closeBtn.style.cssText = `
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    color: inherit;
-  `;
-
-  closeBtn.addEventListener("click", () => {
-    sidebar.style.transform = "translateX(100%)";
-  });
-
-  // Insert close button only once
-  if (!sidebar.querySelector(".close-btn")) {
-    sidebar.insertBefore(closeBtn, sidebar.firstChild);
-  }
-
-  console.log("✅ Sidebar toggle and close logic loaded.");
 });
-
-console.log("Toggle:", toggleBtn);
-console.log("Sidebar:", sidebar);
