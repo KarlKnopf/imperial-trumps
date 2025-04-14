@@ -20,14 +20,40 @@ document.addEventListener("DOMContentLoaded", function () {
     sidebar.style.transform = "translateX(0)";
   });
 
-  // Create close button
+ <script>
+document.addEventListener("DOMContentLoaded", function () {
+  const sidebar = document.getElementById("customSidebar");
+  const toggleButton = document.getElementById("sidebarToggle");
+
+  if (!sidebar || !toggleButton) {
+    console.warn("Sidebar or toggle button not found.");
+    return;
+  }
+
+  // Ensure the sidebar starts hidden
+  sidebar.style.transform = "translateX(100%)";
+
+  // Open sidebar
+  toggleButton.addEventListener("click", () => {
+    sidebar.style.transform = "translateX(0)";
+  });
+
+  // Add close button to top of sidebar
   const closeBtn = document.createElement("button");
-  closeBtn.innerHTML = "✖";
+  closeBtn.textContent = "✖";
   closeBtn.className = "close-btn";
-  closeBtn.onclick = () => {
-    sidebar.style.transform = "translateX(-100%)";
-  };
-  sidebar.insertBefore(closeBtn, sidebar.firstChild);
+  closeBtn.addEventListener("click", () => {
+    sidebar.style.transform = "translateX(100%)";
+  });
+
+  // Insert close button only once
+  if (!sidebar.querySelector(".close-btn")) {
+    sidebar.insertBefore(closeBtn, sidebar.firstChild);
+  }
+
+  console.log("✅ Sidebar toggle and close logic loaded.");
+});
+</script>
 
   console.log("✅ Sidebar script initialized");
 });
