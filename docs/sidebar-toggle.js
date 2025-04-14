@@ -1,3 +1,4 @@
+console.log("Elements at startup:", document.querySelectorAll("#customSidebar, #sidebarToggle"));
 function waitForElement(selector, callback, timeout = 10000) {
   const start = Date.now();
   const interval = setInterval(() => {
