@@ -1,8 +1,10 @@
+// Sidebar Autocomplete with Links and Highlights
+
 const labelSuggestions = [
-  { label: "New Galaxy Introductions", url: "/search/label/New%20Galaxy%20Introductions" },
-  { label: "Cultural Highlights", url: "/search/label/Cultural%20Highlights" },
-  { label: "Interstellar Politics", url: "/search/label/Interstellar%20Politics" },
-  { label: "Space Religion & Philosophy", url: "/search/label/Space%20Religion%20%26%20Philosophy" }
+  { label: "New Galaxy Introductions", url: "/2025/04/issue-1.html" },
+  { label: "Cultural Highlights", url: "/2025/04/issue-1.html" },
+  { label: "Interstellar Politics", url: "/2025/04/issue-2.html" },
+  { label: "Space Religion & Philosophy", url: "/2025/04/issue-2.html" }
 ];
 
 async function fetchPostTitles() {
@@ -11,7 +13,7 @@ async function fetchPostTitles() {
     const data = await response.json();
     return data.feed.entry.map(entry => ({ label: entry.title.$t }));
   } catch (e) {
-    console.warn("Unable to fetch post titles:", e);
+    console.warn("Post title fetch failed:", e);
     return [];
   }
 }
@@ -20,8 +22,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   const input = document.querySelector('#sidebarOverlay input[type="text"]');
   if (!input) return;
 
-  const postSuggestions = await fetchPostTitles();
-  const allSuggestions = [...labelSuggestions, ...postSuggestions];
+  const postTitles = await fetchPostTitles();
+  const allSuggestions = [...labelSuggestions, ...postTitles];
 
   const container = document.createElement("div");
   container.style.position = "relative";
@@ -29,77 +31,76 @@ document.addEventListener("DOMContentLoaded", async function () {
   container.appendChild(input);
 
   const dropdown = document.createElement("ul");
-  dropdown.style.position = "absolute";
-  dropdown.style.top = "100%";
-  dropdown.style.left = "0";
-  dropdown.style.right = "0";
-  dropdown.style.backgroundColor = "#000";
-  dropdown.style.border = "1px solid #b6ff00";
-  dropdown.style.color = "#b6ff00";
-  dropdown.style.listStyle = "none";
-  dropdown.style.padding = "0";
-  dropdown.style.margin = "4px 0 0 0";
-  dropdown.style.zIndex = "10002";
-  dropdown.style.maxHeight = "200px";
-  dropdown.style.overflowY = "auto";
-  dropdown.style.display = "none";
+  Object.assign(dropdown.style, {
+    position: "absolute",
+    top: "100%",
+    left: "0",
+    right: "0",
+    backgroundColor: "#000",
+    border: "1px solid #b6ff00",
+    color: "#b6ff00",
+    listStyle: "none",
+    padding: "0",
+    margin: "4px 0 0 0",
+    zIndex: "10002",
+    maxHeight: "200px",
+    overflowY: "auto",
+    display: "none"
+  });
   container.appendChild(dropdown);
 
   let currentFocus = -1;
 
   function updateHighlight(index) {
-    const items = dropdown.querySelectorAll("li");
-    items.forEach((item, i) => {
-      item.style.backgroundColor = i === index ? "#222" : "transparent";
+    dropdown.querySelectorAll("li").forEach((li, i) => {
+      li.style.backgroundColor = i === index ? "#222" : "transparent";
     });
   }
 
-  input.addEventListener('input', () => {
+  input.addEventListener("input", () => {
     const value = input.value.toLowerCase();
-    dropdown.innerHTML = '';
+    dropdown.innerHTML = "";
     currentFocus = -1;
 
     if (!value) {
-      dropdown.style.display = 'none';
+      dropdown.style.display = "none";
       return;
     }
 
     const filtered = allSuggestions.filter(s => s.label.toLowerCase().includes(value));
-    if (filtered.length === 0) {
-      dropdown.style.display = 'none';
+    if (!filtered.length) {
+      dropdown.style.display = "none";
       return;
     }
 
     filtered.forEach((s, index) => {
-      const item = document.createElement('li');
+      const li = document.createElement("li");
       const matchIndex = s.label.toLowerCase().indexOf(value);
-      const before = s.label.substring(0, matchIndex);
-      const match = s.label.substring(matchIndex, matchIndex + value.length);
-      const after = s.label.substring(matchIndex + value.length);
+      const before = s.label.slice(0, matchIndex);
+      const match = s.label.slice(matchIndex, matchIndex + value.length);
+      const after = s.label.slice(matchIndex + value.length);
+
+      const content = `${before}<span style="color: #fff; font-weight: bold; text-shadow: 0 0 5px #b6ff00;">${match}</span>${after}`;
 
       if (s.url) {
-        item.innerHTML = `<a href="${s.url}" style="color: #b6ff00; text-decoration: none; display: block; padding: 8px;">
-          ${before}<span style="color: #fff; font-weight: bold; text-shadow: 0 0 5px #b6ff00;">${match}</span>${after}
-        </a>`;
+        li.innerHTML = `<a href="${s.url}" style="color: #b6ff00; text-decoration: none; display: block; padding: 8px;">${content}</a>`;
       } else {
-        item.innerHTML = `<span style="display: block; padding: 8px;">
-          ${before}<span style="color: #fff; font-weight: bold; text-shadow: 0 0 5px #b6ff00;">${match}</span>${after}
-        </span>`;
-        item.addEventListener('click', () => {
+        li.innerHTML = `<span style="display: block; padding: 8px;">${content}</span>`;
+        li.addEventListener("click", () => {
           input.value = s.label;
-          dropdown.style.display = 'none';
+          dropdown.style.display = "none";
         });
       }
 
-      item.addEventListener('mouseover', () => updateHighlight(index));
-      item.addEventListener('mouseout', () => updateHighlight(-1));
-      dropdown.appendChild(item);
+      li.addEventListener("mouseover", () => updateHighlight(index));
+      li.addEventListener("mouseout", () => updateHighlight(-1));
+      dropdown.appendChild(li);
     });
 
-    dropdown.style.display = 'block';
+    dropdown.style.display = "block";
   });
 
-  input.addEventListener('keydown', (e) => {
+  input.addEventListener("keydown", e => {
     const items = dropdown.querySelectorAll("li");
     if (!items.length) return;
 
@@ -112,23 +113,21 @@ document.addEventListener("DOMContentLoaded", async function () {
       updateHighlight(currentFocus);
       e.preventDefault();
     } else if (e.key === "Enter") {
-      if (currentFocus > -1) {
-        const target = items[currentFocus].querySelector('a, span');
-        if (target && target.tagName === 'A') {
-          window.location.href = target.href;
-        } else if (target) {
-          input.value = target.textContent;
-          dropdown.style.display = 'none';
-        }
+      const selected = items[currentFocus]?.querySelector("a, span");
+      if (selected?.tagName === "A") {
+        window.location.href = selected.href;
+      } else if (selected) {
+        input.value = selected.textContent;
+        dropdown.style.display = "none";
       }
     } else if (e.key === "Escape") {
-      dropdown.style.display = 'none';
+      dropdown.style.display = "none";
     }
   });
 
-  document.addEventListener('click', (e) => {
+  document.addEventListener("click", e => {
     if (!container.contains(e.target)) {
-      dropdown.style.display = 'none';
+      dropdown.style.display = "none";
     }
   });
 });
