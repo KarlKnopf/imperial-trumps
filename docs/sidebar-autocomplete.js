@@ -1,11 +1,12 @@
-// Sidebar Autocomplete with Links and Highlights
-
 const labelSuggestions = [
-  { label: "New Galaxy Introductions", url: "/2025/04/issue-1.html" },
-  { label: "Cultural Highlights", url: "/2025/04/issue-1.html" },
-  { label: "Interstellar Politics", url: "/2025/04/issue-2.html" },
-  { label: "Space Religion & Philosophy", url: "/2025/04/issue-2.html" }
+  { label: "New Galaxy Introductions", url: "/search/label/New%20Galaxy%20Introductions" },
+  { label: "Cultural Highlights", url: "/search/label/Cultural%20Highlights" },
+  { label: "Interstellar Politics", url: "/search/label/Interstellar%20Politics" },
+  { label: "Space Religion & Philosophy", url: "/search/label/Space%20Religion%20%26%20Philosophy" }
 ];
+
+let postSuggestions = [];
+let fetchedPosts = false;
 
 async function fetchPostTitles() {
   try {
@@ -13,17 +14,14 @@ async function fetchPostTitles() {
     const data = await response.json();
     return data.feed.entry.map(entry => ({ label: entry.title.$t }));
   } catch (e) {
-    console.warn("Post title fetch failed:", e);
+    console.warn("Unable to fetch post titles:", e);
     return [];
   }
 }
 
-document.addEventListener("DOMContentLoaded", async function () {
+document.addEventListener("DOMContentLoaded", function () {
   const input = document.querySelector('#sidebarOverlay input[type="text"]');
   if (!input) return;
-
-  const postTitles = await fetchPostTitles();
-  const allSuggestions = [...labelSuggestions, ...postTitles];
 
   const container = document.createElement("div");
   container.style.position = "relative";
@@ -52,15 +50,24 @@ document.addEventListener("DOMContentLoaded", async function () {
   let currentFocus = -1;
 
   function updateHighlight(index) {
-    dropdown.querySelectorAll("li").forEach((li, i) => {
-      li.style.backgroundColor = i === index ? "#222" : "transparent";
+    const items = dropdown.querySelectorAll("li");
+    items.forEach((item, i) => {
+      item.style.backgroundColor = i === index ? "#222" : "transparent";
     });
   }
 
-  input.addEventListener("input", () => {
+  input.addEventListener("input", async () => {
     const value = input.value.toLowerCase();
-    dropdown.innerHTML = "";
+    dropdown.innerHTML = '';
     currentFocus = -1;
+
+    // Fetch post titles lazily
+    if (!fetchedPosts) {
+      postSuggestions = await fetchPostTitles();
+      fetchedPosts = true;
+    }
+
+    const allSuggestions = [...labelSuggestions, ...postSuggestions];
 
     if (!value) {
       dropdown.style.display = "none";
@@ -68,39 +75,41 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     const filtered = allSuggestions.filter(s => s.label.toLowerCase().includes(value));
-    if (!filtered.length) {
+    if (filtered.length === 0) {
       dropdown.style.display = "none";
       return;
     }
 
     filtered.forEach((s, index) => {
-      const li = document.createElement("li");
+      const item = document.createElement("li");
       const matchIndex = s.label.toLowerCase().indexOf(value);
-      const before = s.label.slice(0, matchIndex);
-      const match = s.label.slice(matchIndex, matchIndex + value.length);
-      const after = s.label.slice(matchIndex + value.length);
-
-      const content = `${before}<span style="color: #fff; font-weight: bold; text-shadow: 0 0 5px #b6ff00;">${match}</span>${after}`;
+      const before = s.label.substring(0, matchIndex);
+      const match = s.label.substring(matchIndex, matchIndex + value.length);
+      const after = s.label.substring(matchIndex + value.length);
 
       if (s.url) {
-        li.innerHTML = `<a href="${s.url}" style="color: #b6ff00; text-decoration: none; display: block; padding: 8px;">${content}</a>`;
+        item.innerHTML = `<a href="${s.url}" style="color: #b6ff00; text-decoration: none; display: block; padding: 8px;">
+          ${before}<span style="color: #fff; font-weight: bold; text-shadow: 0 0 5px #b6ff00;">${match}</span>${after}
+        </a>`;
       } else {
-        li.innerHTML = `<span style="display: block; padding: 8px;">${content}</span>`;
-        li.addEventListener("click", () => {
+        item.innerHTML = `<span style="display: block; padding: 8px;">
+          ${before}<span style="color: #fff; font-weight: bold; text-shadow: 0 0 5px #b6ff00;">${match}</span>${after}
+        </span>`;
+        item.addEventListener("click", () => {
           input.value = s.label;
           dropdown.style.display = "none";
         });
       }
 
-      li.addEventListener("mouseover", () => updateHighlight(index));
-      li.addEventListener("mouseout", () => updateHighlight(-1));
-      dropdown.appendChild(li);
+      item.addEventListener("mouseover", () => updateHighlight(index));
+      item.addEventListener("mouseout", () => updateHighlight(-1));
+      dropdown.appendChild(item);
     });
 
     dropdown.style.display = "block";
   });
 
-  input.addEventListener("keydown", e => {
+  input.addEventListener("keydown", (e) => {
     const items = dropdown.querySelectorAll("li");
     if (!items.length) return;
 
@@ -113,19 +122,21 @@ document.addEventListener("DOMContentLoaded", async function () {
       updateHighlight(currentFocus);
       e.preventDefault();
     } else if (e.key === "Enter") {
-      const selected = items[currentFocus]?.querySelector("a, span");
-      if (selected?.tagName === "A") {
-        window.location.href = selected.href;
-      } else if (selected) {
-        input.value = selected.textContent;
-        dropdown.style.display = "none";
+      if (currentFocus > -1) {
+        const target = items[currentFocus].querySelector("a, span");
+        if (target && target.tagName === "A") {
+          window.location.href = target.href;
+        } else if (target) {
+          input.value = target.textContent;
+          dropdown.style.display = "none";
+        }
       }
     } else if (e.key === "Escape") {
       dropdown.style.display = "none";
     }
   });
 
-  document.addEventListener("click", e => {
+  document.addEventListener("click", (e) => {
     if (!container.contains(e.target)) {
       dropdown.style.display = "none";
     }
