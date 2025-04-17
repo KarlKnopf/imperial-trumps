@@ -1,3 +1,13 @@
+function waitForSidebarInput(callback, retries = 10) {
+  const input = document.querySelector('#sidebarOverlay input[type="text"]');
+  if (input) {
+    callback(input);
+  } else if (retries > 0) {
+    setTimeout(() => waitForSidebarInput(callback, retries - 1), 300);
+  } else {
+    console.warn("⚠️ Sidebar input not found after retries.");
+  }
+}
 const labelSuggestions = [
   { label: "New Galaxy Introductions", url: "/search/label/New%20Galaxy%20Introductions" },
   { label: "Cultural Highlights", url: "/search/label/Cultural%20Highlights" },
@@ -20,8 +30,11 @@ async function fetchPostTitles() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  const input = document.querySelector('#sidebarOverlay input[type="text"]');
-  if (!input) return;
+  waitForSidebarInput(function(input) {
+    // everything inside your current autocomplete logic goes here
+    // starting from: const container = document.createElement("div"); ...
+  });
+});
 
   const container = document.createElement("div");
   container.style.position = "relative";
