@@ -1,3 +1,4 @@
+console.log("📡 Autocomplete script loaded!");
 function waitForSidebarInput(callback, retries = 10) {
   const input = document.querySelector('#sidebarOverlay input[type="text"]');
   if (input) {
