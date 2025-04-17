@@ -32,6 +32,7 @@ async function fetchPostTitles() {
 document.addEventListener("DOMContentLoaded", function () {
   waitForSidebarInput(function(input) {
     console.log("✅ Sidebar input found, initializing autocomplete...");
+    console.log("Value of input element:", input);
     // everything inside your current autocomplete logic goes here
     // starting from: const container = document.createElement("div"); ...
   });
