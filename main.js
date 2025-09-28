@@ -1,12 +1,15 @@
-// Full Imperial Trumps deck
+// Path to back image
+const backImg = "images/card78.png";
+
+// Build full Imperial Trumps deck
 let deck = [];
 
 // Major Arcana: card0.png - card21.png
 for (let i = 0; i <= 21; i++) {
     deck.push({
         type: "major",
-        rank: i + 1,         // optional: 1-22
-        img: "images/card" + i + ".png"
+        rank: i + 1, // 1-22
+        img: `images/card${i}.png`
     });
 }
 
@@ -14,8 +17,8 @@ for (let i = 0; i <= 21; i++) {
 for (let i = 22; i <= 35; i++) {
     deck.push({
         type: "keys",
-        rank: (i - 21),      // 1-14
-        img: "images/card" + i + ".png"
+        rank: i - 21, // 1-14
+        img: `images/card${i}.png`
     });
 }
 
@@ -23,8 +26,8 @@ for (let i = 22; i <= 35; i++) {
 for (let i = 36; i <= 49; i++) {
     deck.push({
         type: "cups",
-        rank: (i - 35),      // 1-14
-        img: "images/card" + i + ".png"
+        rank: i - 35, // 1-14
+        img: `images/card${i}.png`
     });
 }
 
@@ -32,8 +35,8 @@ for (let i = 36; i <= 49; i++) {
 for (let i = 50; i <= 63; i++) {
     deck.push({
         type: "swords",
-        rank: (i - 49),      // 1-14
-        img: "images/card" + i + ".png"
+        rank: i - 49, // 1-14
+        img: `images/card${i}.png`
     });
 }
 
@@ -41,32 +44,12 @@ for (let i = 50; i <= 63; i++) {
 for (let i = 64; i <= 77; i++) {
     deck.push({
         type: "pentacles",
-        rank: (i - 63),      // 1-14
-        img: "images/card" + i + ".png"
+        rank: i - 63, // 1-14
+        img: `images/card${i}.png`
     });
 }
 
-// Back image path (face-down)
-const backImg = "images/card78.png";
-
-let imgElement = document.createElement("img");
-imgElement.src = backImg;
-imgElement.dataset.front = deck[0].img; // reference front image
-imgElement.dataset.type = deck[0].type;
-imgElement.dataset.rank = deck[0].rank;
-imgElement.classList.add("card");
-document.body.appendChild(imgElement);
-
-
-function flipCard(cardElement) {
-    if (cardElement.src.includes("card78.png")) {
-        cardElement.src = cardElement.dataset.front; // show front
-    } else {
-        cardElement.src = backImg; // flip back
-    }
-}
-
-// Shuffle deck
+// Shuffle the deck
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         let j = Math.floor(Math.random() * (i + 1));
@@ -77,26 +60,23 @@ function shuffle(array) {
 
 deck = shuffle(deck);
 
-// Display first 7 cards in the stock for testing
+// Display first 7 cards face-down for testing
 const stockDiv = document.getElementById("stock");
 
 deck.slice(0, 7).forEach(card => {
     const img = document.createElement("img");
-    img.src = backImg; // show face-down
+    img.src = backImg;           // initially face-down
     img.dataset.front = card.img;
     img.dataset.type = card.type;
     img.dataset.rank = card.rank;
     img.classList.add("card");
-    
-    // click to flip card
+
+    // Click to flip card
     img.addEventListener("click", () => {
-        if (img.src.includes("card78.png")) {
-            img.src = img.dataset.front;
-        } else {
-            img.src = backImg;
-        }
+        img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
     });
 
     stockDiv.appendChild(img);
 });
+
 
