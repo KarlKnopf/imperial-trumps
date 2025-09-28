@@ -66,3 +66,37 @@ function flipCard(cardElement) {
     }
 }
 
+// Shuffle deck
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+deck = shuffle(deck);
+
+// Display first 7 cards in the stock for testing
+const stockDiv = document.getElementById("stock");
+
+deck.slice(0, 7).forEach(card => {
+    const img = document.createElement("img");
+    img.src = backImg; // show face-down
+    img.dataset.front = card.img;
+    img.dataset.type = card.type;
+    img.dataset.rank = card.rank;
+    img.classList.add("card");
+    
+    // click to flip card
+    img.addEventListener("click", () => {
+        if (img.src.includes("card78.png")) {
+            img.src = img.dataset.front;
+        } else {
+            img.src = backImg;
+        }
+    });
+
+    stockDiv.appendChild(img);
+});
+
