@@ -1,7 +1,7 @@
 // Back of the cards
-const backImg = "images/card78.png";
+const backImg = "images/back/card78.png";
 
-// Create deck array
+// Deck array
 let deck = [];
 
 // Major Arcana: card0.png - card21.png
@@ -9,7 +9,7 @@ for (let i = 0; i <= 21; i++) {
     deck.push({
         type: "major",
         rank: i + 1,
-        img: `images/card${i}.png`
+        img: `images/major/card${i}.png`
     });
 }
 
@@ -18,7 +18,7 @@ for (let i = 22; i <= 35; i++) {
     deck.push({
         type: "keys",
         rank: i - 21,
-        img: `images/card${i}.png`
+        img: `images/keys/card${i}.png`
     });
 }
 
@@ -27,7 +27,7 @@ for (let i = 36; i <= 49; i++) {
     deck.push({
         type: "cups",
         rank: i - 35,
-        img: `images/card${i}.png`
+        img: `images/cups/card${i}.png`
     });
 }
 
@@ -36,7 +36,7 @@ for (let i = 50; i <= 63; i++) {
     deck.push({
         type: "swords",
         rank: i - 49,
-        img: `images/card${i}.png`
+        img: `images/swords/card${i}.png`
     });
 }
 
@@ -45,7 +45,7 @@ for (let i = 64; i <= 77; i++) {
     deck.push({
         type: "pentacles",
         rank: i - 63,
-        img: `images/card${i}.png`
+        img: `images/pentacles/card${i}.png`
     });
 }
 
@@ -58,25 +58,24 @@ function shuffle(array) {
     return array;
 }
 
+// Shuffle the deck
 deck = shuffle(deck);
 
-// Display a few cards for testing
+// Display first 7 cards as a test in #stock div
 const stockDiv = document.getElementById("stock");
 
 deck.slice(0, 7).forEach(card => {
     const img = document.createElement("img");
-    img.src = backImg;               // start face-down
-    img.dataset.front = card.img;    // front of card
+    img.src = backImg;                // face-down
+    img.dataset.front = card.img;     // front of card
     img.dataset.type = card.type;
     img.dataset.rank = card.rank;
     img.classList.add("card");
 
-    // Click to flip
+    // Flip on click
     img.addEventListener("click", () => {
         img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
     });
 
     stockDiv.appendChild(img);
 });
-
-
