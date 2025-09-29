@@ -4,26 +4,11 @@ let deck = [];
 
 // ---- BUILD DECK ----
 function buildDeck() {
-    // Major Arcana 0-21
-    for (let i = 0; i <= 21; i++) {
-        deck.push({ type: "major", rank: i + 1, img: `images/major/card${i}.png` });
-    }
-    // Keys 22-35
-    for (let i = 22; i <= 35; i++) {
-        deck.push({ type: "keys", rank: i - 21, img: `images/keys/card${i}.png` });
-    }
-    // Cups 36-49
-    for (let i = 36; i <= 49; i++) {
-        deck.push({ type: "cups", rank: i - 35, img: `images/cups/card${i}.png` });
-    }
-    // Swords 50-63
-    for (let i = 50; i <= 63; i++) {
-        deck.push({ type: "swords", rank: i - 49, img: `images/swords/card${i}.png` });
-    }
-    // Pentacles 64-77
-    for (let i = 64; i <= 77; i++) {
-        deck.push({ type: "pentacles", rank: i - 63, img: `images/pentacles/card${i}.png` });
-    }
+    for (let i = 0; i <= 21; i++) deck.push({ type: "major", rank: i + 1, img: `images/major/card${i}.png` });
+    for (let i = 22; i <= 35; i++) deck.push({ type: "keys", rank: i - 21, img: `images/keys/card${i}.png` });
+    for (let i = 36; i <= 49; i++) deck.push({ type: "cups", rank: i - 35, img: `images/cups/card${i}.png` });
+    for (let i = 50; i <= 63; i++) deck.push({ type: "swords", rank: i - 49, img: `images/swords/card${i}.png` });
+    for (let i = 64; i <= 77; i++) deck.push({ type: "pentacles", rank: i - 63, img: `images/pentacles/card${i}.png` });
 }
 
 // ---- SHUFFLE ----
@@ -42,13 +27,12 @@ deck = shuffle(deck);
 const stockDiv = document.getElementById("stock");
 const tableauDiv = document.getElementById("tableau");
 const foundationsDiv = document.getElementById("foundations");
-
-// ---- STOCK STACK ----
 let stockStack = [...deck];
 
+// ---- STOCK RENDER ----
 function renderStock() {
     stockDiv.innerHTML = "";
-    if (stockStack.length === 0) return;
+    if (!stockStack.length) return;
 
     const topCard = stockStack[stockStack.length - 1];
     const img = document.createElement("img");
@@ -60,11 +44,9 @@ function renderStock() {
 
     img.addEventListener("click", () => {
         img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
-        // For now, just remove from stock as "drawn"
         stockStack.pop();
         renderStock();
     });
-
     stockDiv.appendChild(img);
 }
 
@@ -102,10 +84,10 @@ for (let col = 0; col < 7; col++) {
         // Bottom card face-up
         img.src = row === col ? cardData.img : backImg;
 
-        // Stack cards visually
+        // Fan offsets
         img.style.position = "absolute";
         img.style.top = `${row * 30}px`;
-        img.style.left = "0px";
+        img.style.left = `${row * 5}px`;
         img.style.zIndex = row;
 
         pile.appendChild(img);
@@ -115,7 +97,7 @@ for (let col = 0; col < 7; col++) {
 }
 stockStack = stockStack.slice(dealIndex);
 
-// ---- DRAG & DROP FUNCTION ----
+// ---- DRAG & DROP ----
 function addDragBehavior(card) {
     card.setAttribute("draggable", "true");
     card.addEventListener("dragstart", (e) => {
@@ -127,9 +109,10 @@ function addDragBehavior(card) {
     });
 }
 
+// Tableau drop
 tableauPiles.forEach(pile => {
-    pile.addEventListener("dragover", (e) => e.preventDefault());
-    pile.addEventListener("drop", (e) => {
+    pile.addEventListener("dragover", e => e.preventDefault());
+    pile.addEventListener("drop", e => {
         e.preventDefault();
         const cardData = JSON.parse(e.dataTransfer.getData("text/plain"));
         const droppedCard = document.createElement("img");
@@ -137,10 +120,18 @@ tableauPiles.forEach(pile => {
         droppedCard.dataset.type = cardData.type;
         droppedCard.dataset.rank = cardData.rank;
         droppedCard.classList.add("card");
+
+        // Position on top of last card
+        const row = pile.children.length;
+        droppedCard.style.position = "absolute";
+        droppedCard.style.top = `${row * 30}px`;
+        droppedCard.style.left = `${row * 5}px`;
+        droppedCard.style.zIndex = row;
+
         addDragBehavior(droppedCard);
         pile.appendChild(droppedCard);
 
-        // Remove from stock if it came from there
+        // Remove from stock
         stockStack = stockStack.filter(c => !(c.type === cardData.type && c.rank == cardData.rank));
         renderStock();
     });
