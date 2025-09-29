@@ -7,6 +7,21 @@
     gap: 20px; /* space between rows */
 }
 
+#stock {
+    position: relative; /* keep it in the flow */
+    width: 120px;
+    height: 150px;
+    margin: 10px;
+    float: left; /* optional, so it doesn’t overlap the tableau */
+}
+
+#game-area {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+}
+
+
 /* Tableau container: 7 piles side by side */
 #tableau {
     display: flex;
@@ -53,3 +68,4 @@
     cursor: grab;
     /* remove position: absolute */
 }
+
