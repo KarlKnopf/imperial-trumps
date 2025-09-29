@@ -1,86 +1,45 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #222;
-    color: #fff;
+    font-family: sans-serif;
+    background-color: #f4f4f4;
     text-align: center;
 }
 
-.card-container, .tableau-container, .foundations-container {
+#game-board {
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+#stock-container, #tableau-container, #foundations-container {
+    border: 1px solid #ccc;
+    padding: 10px;
+    min-width: 150px;
+    min-height: 300px;
+    background-color: #fff;
+}
+
+#stock, #tableau, #foundations {
+    display: flex;
     flex-wrap: wrap;
-    margin: 10px;
+    justify-content: center;
     gap: 10px;
 }
 
-/* Add this to your styles.css file */
+.tableau-pile, .foundation {
+    border: 2px dashed #999;
+    min-width: 100px;
+    min-height: 150px;
+    position: relative;
+}
 
-/* GENERAL CARD STYLE */
 .card {
     width: 100px;
-    height: 145px;
-    margin: 5px;
+    height: 150px;
     cursor: pointer;
-    border-radius: 6px;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    position: absolute; /* allows dragging without overlapping layout */
 }
 
-/* STOCK AREA */
-#stock {
-    margin-bottom: 20px;
-}
 
-/* TABLEAU PILES */
-.tableau-pile {
-    display: inline-block;
-    vertical-align: top;
-    width: 110px;
-    min-height: 160px;
-    margin-right: 10px;
-    border: 2px dashed #888;
-    padding: 5px;
-    border-radius: 6px;
-    background-color: #f0f0f0;
-}
-
-/* FOUNDATIONS */
-.foundation {
-    display: inline-block;
-    width: 110px;
-    min-height: 160px;
-    margin-right: 10px;
-    border: 2px dashed #444;
-    padding: 5px;
-    border-radius: 6px;
-    background-color: #e0e0e0;
-}
-
-/* OPTIONAL: Label formatting */
-.tableau-pile strong,
-.foundation strong {
-    display: block;
-    text-align: center;
-    margin-bottom: 5px;
-    font-size: 0.9em;
-}
-
-#game-area {
-    display: flex;
-    gap: 60px; /* space between stock, tableau, foundations */
-    padding: 20px;
-    align-items: flex-start;
-}
-
-#tableau-container {
-    display: flex;
-    gap: 10px; /* space between tableau piles */
-}
-
-#foundations-container {
-    display: flex;
-    flex-direction: row;
-    gap: 10px; /* space between foundations */
-}
 
 
 
