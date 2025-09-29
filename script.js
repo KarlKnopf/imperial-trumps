@@ -1,20 +1,28 @@
 const backImg = "images/back/card78.png";
 let deck = [];
 
-// ----------------------
-// BUILD DECK
-// ----------------------
+// ---- Build deck ----
 function buildDeck() {
     // Major Arcana 0-21
-    for (let i = 0; i <= 21; i++) deck.push({ type: "major", rank: i + 1, img: `images/major/card${i}.png` });
+    for (let i = 0; i <= 21; i++) {
+        deck.push({ type: "major", rank: i + 1, img: `images/major/card${i}.png` });
+    }
     // Keys 22-35
-    for (let i = 22; i <= 35; i++) deck.push({ type: "keys", rank: i - 21, img: `images/keys/card${i}.png` });
+    for (let i = 22; i <= 35; i++) {
+        deck.push({ type: "keys", rank: i - 21, img: `images/keys/card${i}.png` });
+    }
     // Cups 36-49
-    for (let i = 36; i <= 49; i++) deck.push({ type: "cups", rank: i - 35, img: `images/cups/card${i}.png` });
+    for (let i = 36; i <= 49; i++) {
+        deck.push({ type: "cups", rank: i - 35, img: `images/cups/card${i}.png` });
+    }
     // Swords 50-63
-    for (let i = 50; i <= 63; i++) deck.push({ type: "swords", rank: i - 49, img: `images/swords/card${i}.png` });
+    for (let i = 50; i <= 63; i++) {
+        deck.push({ type: "swords", rank: i - 49, img: `images/swords/card${i}.png` });
+    }
     // Pentacles 64-77
-    for (let i = 64; i <= 77; i++) deck.push({ type: "pentacles", rank: i - 63, img: `images/pentacles/card${i}.png` });
+    for (let i = 64; i <= 77; i++) {
+        deck.push({ type: "pentacles", rank: i - 63, img: `images/pentacles/card${i}.png` });
+    }
 }
 
 function shuffle(array) {
@@ -25,19 +33,23 @@ function shuffle(array) {
     return array;
 }
 
-// ----------------------
-// INIT GAME ELEMENTS
-// ----------------------
+// ---- Initialize Game ----
+buildDeck();
+deck = shuffle(deck);
+
 const stockDiv = document.getElementById("stock");
 const tableauDiv = document.getElementById("tableau");
 const foundationsDiv = document.getElementById("foundations");
 
-let stockStack = [];
+// ---- Stock stack array ----
+let stockStack = [...deck]; // copy of shuffled deck
 
+// ---- Tableau and Foundations ----
 let tableauPiles = [];
 for (let i = 0; i < 7; i++) {
     const pile = document.createElement("div");
     pile.classList.add("tableau-pile");
+    pile.style.position = "relative"; // necessary for fanning
     tableauDiv.appendChild(pile);
     tableauPiles.push(pile);
 }
@@ -51,67 +63,72 @@ foundationSuits.forEach(suit => {
     foundationsDiv.appendChild(f);
 });
 
-// ----------------------
-// CARD ELEMENT
-// ----------------------
-function createCardElement(card, faceUp = false) {
+// ---- Create card element ----
+function createCardElement(cardData, faceUp = false) {
     const img = document.createElement("img");
-    img.src = faceUp ? card.img : backImg;
-    img.dataset.front = card.img;
-    img.dataset.type = card.type;
-    img.dataset.rank = card.rank;
+    img.src = faceUp ? cardData.img : backImg;
+    img.dataset.type = cardData.type;
+    img.dataset.rank = cardData.rank;
+    img.dataset.front = cardData.img;
     img.classList.add("card");
     img.setAttribute("draggable", "true");
 
     img.addEventListener("click", () => {
-        img.src = img.src === backImg ? img.dataset.front : backImg;
+        if (img.src.includes(backImg)) img.src = img.dataset.front;
     });
 
     img.addEventListener("dragstart", (e) => {
         e.dataTransfer.setData("text/plain", JSON.stringify({
-            type: card.type,
-            rank: card.rank,
-            src: card.img
+            type: img.dataset.type,
+            rank: img.dataset.rank,
+            src: img.dataset.front
         }));
     });
 
     return img;
 }
 
-// ----------------------
-// DEAL TABLEAU
-// ----------------------
-function dealTableau() {
-    let index = 0;
-    for (let pileIndex = 0; pileIndex < 7; pileIndex++) {
-        for (let j = 0; j <= pileIndex; j++) {
-            const card = stockStack[index];
-            const faceUp = (j === pileIndex); // bottom card face up
-            const cardEl = createCardElement(card, faceUp);
-            cardEl.style.top = `${30 * j}px`; // stacked fan
-            tableauPiles[pileIndex].appendChild(cardEl);
-            index++;
-        }
-    }
-    stockStack = stockStack.slice(28); // remove dealt cards
-    renderStock();
-}
-
-// ----------------------
-// RENDER STOCK
-// ----------------------
+// ---- Render Stock ----
 function renderStock() {
     stockDiv.innerHTML = "";
     if (stockStack.length === 0) return;
-
     const topCard = stockStack[stockStack.length - 1];
-    const img = createCardElement(topCard, false);
-    stockDiv.appendChild(img);
+    const cardEl = createCardElement(topCard);
+    cardEl.addEventListener("click", () => {
+        cardEl.src = cardEl.dataset.front;
+    });
+    stockDiv.appendChild(cardEl);
 }
 
-// ----------------------
-// ENABLE DROPPING ON TABLEAU AND FOUNDATIONS
-// ----------------------
+// ---- Tableau Fanning ----
+function updateFan(pile) {
+    const cards = Array.from(pile.children);
+    cards.forEach((card, idx) => {
+        card.style.position = "absolute";
+        card.style.top = `${30 * idx}px`;
+        card.style.left = "0px";
+    });
+}
+
+// ---- Remove Card from anywhere ----
+function removeCardFromAllPiles(cardData) {
+    // Stock
+    stockStack = stockStack.filter(c => !(c.type === cardData.type && c.rank == cardData.rank));
+    // Tableau
+    tableauPiles.forEach(pile => {
+        Array.from(pile.children).forEach(c => {
+            if (c.dataset.type === cardData.type && c.dataset.rank == cardData.rank) pile.removeChild(c);
+        });
+    });
+    // Foundations
+    Array.from(foundationsDiv.children).forEach(f => {
+        Array.from(f.children).forEach(c => {
+            if (c.dataset.type === cardData.type && c.dataset.rank == cardData.rank) f.removeChild(c);
+        });
+    });
+}
+
+// ---- Enable Drop with Rule Checking ----
 function enableDrop(targetDiv) {
     targetDiv.addEventListener("dragover", (e) => e.preventDefault());
     targetDiv.addEventListener("drop", (e) => {
@@ -119,64 +136,43 @@ function enableDrop(targetDiv) {
         const cardData = JSON.parse(e.dataTransfer.getData("text/plain"));
         const cardEl = createCardElement(cardData, true);
 
-        // Remove from previous pile or stock
-        removeCardFromAllPiles(cardData);
-
-        // Append to the drop target
-        targetDiv.appendChild(cardEl);
-
-        // Update fanning for tableau piles only
-        if (targetDiv.classList.contains("tableau-pile")) {
-            updateFan(targetDiv);
+        // Check rules for foundations
+        if (targetDiv.classList.contains("foundation")) {
+            const top = targetDiv.lastElementChild;
+            if (!checkFoundationRules(cardData, top)) return;
         }
 
-        renderStock(); // refresh stock if needed
+        removeCardFromAllPiles(cardData);
+        targetDiv.appendChild(cardEl);
+
+        if (targetDiv.classList.contains("tableau-pile")) updateFan(targetDiv);
+        renderStock();
     });
 }
 
-function removeCardFromAllPiles(cardData) {
-    // Stock
-    stockStack = stockStack.filter(c => !(c.type === cardData.type && c.rank == cardData.rank));
-    // Tableau piles
-    tableauPiles.forEach(pile => {
-        Array.from(pile.children).forEach(child => {
-            if (child.dataset.type === cardData.type && child.dataset.rank == cardData.rank) {
-                pile.removeChild(child);
-            }
-        });
-    });
-    // Foundations
-    Array.from(foundationsDiv.children).forEach(f => {
-        Array.from(f.children).forEach(child => {
-            if (child.dataset.type === cardData.type && child.dataset.rank == cardData.rank) {
-                f.removeChild(child);
-            }
-        });
-    });
+// ---- Simple Foundation Rule Checker ----
+function checkFoundationRules(card, topCard) {
+    if (!topCard) return true; // empty foundation
+    if (card.type === "major") {
+        return card.rank === parseInt(topCard.dataset.rank) + 1;
+    } else {
+        return card.type === topCard.dataset.type && card.rank === parseInt(topCard.dataset.rank) + 1;
+    }
 }
 
-// ----------------------
-// UPDATE FANNING FOR TABLEAU
-// ----------------------
-function updateFan(pile) {
-    const cards = Array.from(pile.children);
-    cards.forEach((card, idx) => {
-        card.style.top = `${30 * idx}px`;
-    });
-}
-
-// ----------------------
-// APPLY TO ALL PILES AND FOUNDATIONS
-// ----------------------
+// ---- Enable Drop on all piles ----
 tableauPiles.forEach(pile => enableDrop(pile));
 Array.from(foundationsDiv.children).forEach(f => enableDrop(f));
 
+// ---- Deal initial tableau ----
+for (let i = 0; i < tableauPiles.length; i++) {
+    for (let j = 0; j <= i; j++) {
+        const cardData = stockStack.pop();
+        const faceUp = j === i; // only bottom card face up
+        tableauPiles[i].appendChild(createCardElement(cardData, faceUp));
+    }
+    updateFan(tableauPiles[i]);
+}
 
-// ----------------------
-// START GAME
-// ----------------------
-buildDeck();
-deck = shuffle(deck);
-stockStack = [...deck];
-
-dealTableau();
+// ---- Start game ----
+renderStock();
