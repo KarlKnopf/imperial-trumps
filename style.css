@@ -13,34 +13,43 @@ body {
     gap: 10px;
 }
 
+/* Add this to your styles.css file */
+
+/* General card style */
 .card {
-    width: 100px;
-    height: 150px;
-    cursor: pointer;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-    transition: transform 0.2s;
+  width: 100px;
+  height: 145px;
+  margin: 2px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.card:hover {
-    transform: scale(1.1);
+/* Tableau piles */
+.tableau-pile {
+  width: 100px;
+  height: 145px;
+  border: 2px dashed rgba(0, 0, 0, 0.4);
+  border-radius: 5px;
+  display: inline-block;
+  vertical-align: top;
+  margin: 10px;
+  position: relative;
 }
 
-#stock {
-    position: relative;
-    width: 120px;
-    height: 160px;
-    margin: 0 auto;
-}
-#stock .card {
-    position: absolute;
-    top: 0;
-    left: 0;
+/* Foundation slots */
+.foundation {
+  width: 100px;
+  height: 145px;
+  border: 2px dashed rgba(0, 0, 0, 0.6);
+  border-radius: 5px;
+  display: inline-block;
+  vertical-align: top;
+  margin: 10px;
+  text-align: center;
+  font-weight: bold;
+  padding-top: 5px;
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
-
-.tableau-container, .foundations-container {
-    min-height: 160px;
-}
 
 
