@@ -1,73 +1,27 @@
-body {
-    font-family: sans-serif;
-}
-
-#game {
+#game-container {
     display: flex;
-    gap: 50px;
-    padding: 20px;
-}
-
-/* Stock */
-#stock {
-    width: 100px;
-    height: 140px;
-    position: relative;
-}
-
-#stock img.card {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100px;
-    height: 140px;
-    cursor: pointer;
-}
-
-/* Tableau */
-#tableau {
-    display: flex;
+    align-items: flex-start;
+    margin: 20px;
     gap: 20px;
 }
 
-.tableau-pile {
+#stock, #tableau, #foundations {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tableau-pile, .foundation {
     width: 100px;
-    min-height: 200px;
+    height: 300px;
     border: 2px dashed #aaa;
+    margin: 5px;
     position: relative;
 }
 
-.tableau-pile img.card {
-    position: absolute;
-    top: 0;
-    left: 0;
+.card {
     width: 100px;
     height: 140px;
-}
-
-/* Overlapping fan in tableau */
-.tableau-pile img.card:nth-child(n+2) {
-    top: calc(30px * (var(--i)));
-}
-
-/* Foundations */
-#foundations {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.foundation {
-    width: 100px;
-    min-height: 140px;
-    border: 2px solid #444;
-    text-align: center;
-}
-
-.foundation img.card {
-    width: 100px !important;
-    height: 140px !important;
-    position: relative !important;
-    top: 0 !important;
-    left: 0 !important;
+    position: absolute;
+    cursor: grab;
 }
