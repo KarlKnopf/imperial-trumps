@@ -1,7 +1,7 @@
-// ---- Card Back ----
+// ----------------------
+// Deck setup
+// ----------------------
 const backImg = "images/back/card78.png";
-
-// ---- Build deck ----
 let deck = [];
 
 function buildDeck() {
@@ -27,7 +27,6 @@ function buildDeck() {
     }
 }
 
-// ---- Shuffle deck ----
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -36,84 +35,62 @@ function shuffle(array) {
     return array;
 }
 
-// ---- DOM Elements ----
+// ----------------------
+// DOM references
+// ----------------------
 const stockDiv = document.getElementById("stock");
 const tableauDiv = document.getElementById("tableau");
 const foundationsDiv = document.getElementById("foundations");
 
-// ---- Tableau + Stock data ----
-const tableauPiles = [];
-let stockStack = [];
-
-// ---- Initialize deck ----
+// ----------------------
+// Initialize deck and stock
+// ----------------------
 buildDeck();
 deck = shuffle(deck);
-stockStack = [...deck];
+let stockStack = [...deck];
 
-// ---- Render stock ----
-function renderStock() {
-    stockDiv.innerHTML = "";
-    if (stockStack.length === 0) return;
-
-    const topCard = stockStack[stockStack.length - 1];
+// ----------------------
+// Helpers
+// ----------------------
+function createCardElement(card, faceUp = false) {
     const img = document.createElement("img");
-    img.src = backImg;
-    img.dataset.front = topCard.img;
-    img.dataset.type = topCard.type;
-    img.dataset.rank = topCard.rank;
+    img.src = faceUp ? card.img : backImg;
+    img.dataset.front = card.img;
+    img.dataset.type = card.type;
+    img.dataset.rank = card.rank;
     img.classList.add("card");
-
     img.setAttribute("draggable", "true");
-    addDragBehavior(img);
 
-    stockDiv.appendChild(img);
-}
-
-// ---- Deal tableau ----
-function dealTableau() {
-    for (let i = 0; i < 7; i++) {
-        const pile = document.createElement("div");
-        pile.classList.add("tableau-pile");
-        tableauDiv.appendChild(pile);
-        tableauPiles.push(pile);
-
-        for (let j = 0; j <= i; j++) {
-            const cardData = stockStack.shift();
-            const card = document.createElement("img");
-            card.dataset.type = cardData.type;
-            card.dataset.rank = cardData.rank;
-            card.dataset.front = cardData.img;
-            card.classList.add("card");
-
-            card.src = j === i ? cardData.img : backImg; // bottom card face up
-            card.style.top = `${j * 30}px`;
-            card.style.left = "0px";
-
-            card.setAttribute("draggable", "true");
-            addDragBehavior(card);
-
-            pile.appendChild(card);
-        }
-
-        enableDrop(pile);
-    }
-    renderStock();
-}
-
-// ---- Drag behavior ----
-function addDragBehavior(card) {
-    card.addEventListener("dragstart", (e) => {
-        e.dataTransfer.setData("text/plain", JSON.stringify({
-            type: card.dataset.type,
-            rank: card.dataset.rank,
-            src: card.dataset.front
-        }));
-        card.classList.add("dragging");
+    // Drag events
+    img.addEventListener("dragstart", (e) => {
+        img.classList.add("dragging");
     });
-    card.addEventListener("dragend", () => card.classList.remove("dragging"));
+    img.addEventListener("dragend", (e) => {
+        img.classList.remove("dragging");
+    });
+
+    // Click to flip
+    img.addEventListener("click", () => {
+        img.src = img.src === backImg ? img.dataset.front : backImg;
+    });
+
+    return img;
 }
 
-// ---- Enable drop zones ----
+function getTopCard(pileDiv) {
+    const cards = pileDiv.querySelectorAll(".card");
+    return cards[cards.length - 1] || null;
+}
+
+function fanTableauPile(pile) {
+    const cards = pile.querySelectorAll(".card");
+    cards.forEach((c, i) => {
+        c.style.position = "absolute";
+        c.style.top = `${i * 30}px`;
+        c.style.left = `0px`;
+    });
+}
+
 function enableDrop(targetDiv) {
     targetDiv.addEventListener("dragover", (e) => e.preventDefault());
     targetDiv.addEventListener("drop", (e) => {
@@ -122,35 +99,85 @@ function enableDrop(targetDiv) {
         if (!dragging) return;
 
         const oldPile = dragging.parentElement;
-
-        // Move card
         targetDiv.appendChild(dragging);
 
-        // Re-fan tableau piles
+        // Re-fan tableau if needed
         if (targetDiv.classList.contains("tableau-pile")) fanTableauPile(targetDiv);
         if (oldPile && oldPile.classList.contains("tableau-pile")) fanTableauPile(oldPile);
     });
 }
 
-// ---- Fan tableau pile ----
-function fanTableauPile(pile) {
-    const cards = pile.querySelectorAll(".card");
-    cards.forEach((card, index) => {
-        card.style.top = `${index * 30}px`;
-        card.style.left = "0px";
-    });
+// ----------------------
+// Create tableau piles
+// ----------------------
+const tableauPiles = [];
+for (let i = 0; i < 7; i++) {
+    const pile = document.createElement("div");
+    pile.classList.add("tableau-pile");
+    pile.style.position = "relative";
+    pile.style.display = "inline-block";
+    pile.style.width = "120px";
+    pile.style.height = "400px";
+    pile.style.marginRight = "10px";
+    tableauDiv.appendChild(pile);
+    enableDrop(pile);
+    tableauPiles.push(pile);
 }
 
-// ---- Create foundations ----
+// ----------------------
+// Deal tableau
+// ----------------------
+function dealTableau() {
+    for (let i = 0; i < tableauPiles.length; i++) {
+        for (let j = 0; j <= i; j++) {
+            const card = stockStack.shift();
+            if (!card) continue;
+            const faceUp = j === i;
+            const cardEl = createCardElement(card, faceUp);
+            tableauPiles[i].appendChild(cardEl);
+        }
+        fanTableauPile(tableauPiles[i]);
+    }
+}
+
+// ----------------------
+// Create foundations
+// ----------------------
 const foundationSuits = ["keys", "cups", "swords", "pentacles", "major"];
 foundationSuits.forEach(suit => {
     const f = document.createElement("div");
     f.classList.add("foundation");
     f.dataset.suit = suit;
+    f.style.display = "inline-block";
+    f.style.width = "120px";
+    f.style.height = "180px";
+    f.style.marginRight = "10px";
+    f.style.border = "2px dashed black";
     f.innerHTML = `<strong>${suit.toUpperCase()}</strong>`;
     foundationsDiv.appendChild(f);
     enableDrop(f);
 });
 
-// ---- Start game ----
+// ----------------------
+// Render stock
+// ----------------------
+function renderStock() {
+    stockDiv.innerHTML = "";
+    if (stockStack.length === 0) return;
+    const topCard = stockStack[stockStack.length - 1];
+    const img = createCardElement(topCard, false);
+    img.addEventListener("click", () => {
+        // Draw to first tableau pile as an example
+        const firstPile = tableauPiles[0];
+        firstPile.appendChild(createCardElement(stockStack.pop(), true));
+        fanTableauPile(firstPile);
+        renderStock();
+    });
+    stockDiv.appendChild(img);
+}
+
+// ----------------------
+// Start game
+// ----------------------
 dealTableau();
+renderStock();
