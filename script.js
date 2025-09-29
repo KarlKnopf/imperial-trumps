@@ -67,14 +67,19 @@ let stockStack = [];
 
 // Deal to tableau
 function dealTableau() {
-    // 7 piles
-    for (let i = 0; i < 7; i++) {
-        const pile = document.createElement("div");
-        pile.classList.add("tableau-pile");
-        pile.innerHTML = `<strong>Pile ${i + 1}</strong>`;
-        tableauDiv.appendChild(pile);
-        tableauPiles.push(pile);
-    }
+    // ---- Tableau ----
+for (let i = 0; i < 7; i++) {
+    const pile = document.createElement("div");
+    pile.classList.add("tableau-pile");
+    pile.dataset.index = i;
+    tableauDiv.appendChild(pile);
+
+    // store reference
+    tableauPiles.push(pile);
+
+    // enable dropping
+    enableDrop(pile);
+}
 
     // Deal cards
     for (let i = 0; i < 7; i++) {
@@ -202,4 +207,3 @@ foundationSuits.forEach(suit => {
 
 // ---- Initialize everything ----
 dealTableau();
-tableauPiles.forEach(p => enableDrop(p));
