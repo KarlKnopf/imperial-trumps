@@ -1,68 +1,106 @@
-const stockDiv = document.getElementById("stock");
-const tableauDiv = document.getElementById("tableau");
-const foundationsDiv = document.getElementById("foundations");
-
+// ---- Card Back ----
 const backImg = "images/back/card78.png";
-let deck = [];
-let stockStack = [];
-const tableauPiles = [];
 
 // ---- Build deck ----
+let deck = [];
+
 function buildDeck() {
-    for (let i = 0; i <= 21; i++) deck.push({ type: "major", rank: i+1, img:`images/major/card${i}.png`});
-    for (let i = 22; i <= 35; i++) deck.push({ type: "keys", rank: i-21, img:`images/keys/card${i}.png`});
-    for (let i = 36; i <= 49; i++) deck.push({ type: "cups", rank: i-35, img:`images/cups/card${i}.png`});
-    for (let i = 50; i <= 63; i++) deck.push({ type: "swords", rank: i-49, img:`images/swords/card${i}.png`});
-    for (let i = 64; i <= 77; i++) deck.push({ type: "pentacles", rank: i-63, img:`images/pentacles/card${i}.png`});
+    // Major Arcana 0-21
+    for (let i = 0; i <= 21; i++) {
+        deck.push({ type: "major", rank: i + 1, img: `images/major/card${i}.png` });
+    }
+    // Keys 22-35
+    for (let i = 22; i <= 35; i++) {
+        deck.push({ type: "keys", rank: i - 21, img: `images/keys/card${i}.png` });
+    }
+    // Cups 36-49
+    for (let i = 36; i <= 49; i++) {
+        deck.push({ type: "cups", rank: i - 35, img: `images/cups/card${i}.png` });
+    }
+    // Swords 50-63
+    for (let i = 50; i <= 63; i++) {
+        deck.push({ type: "swords", rank: i - 49, img: `images/swords/card${i}.png` });
+    }
+    // Pentacles 64-77
+    for (let i = 64; i <= 77; i++) {
+        deck.push({ type: "pentacles", rank: i - 63, img: `images/pentacles/card${i}.png` });
+    }
 }
 
+// ---- Shuffle deck ----
 function shuffle(array) {
-    for (let i=array.length-1;i>0;i--){
-        const j=Math.floor(Math.random()*(i+1));
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
 }
 
+// ---- DOM Elements ----
+const stockDiv = document.getElementById("stock");
+const tableauDiv = document.getElementById("tableau");
+const foundationsDiv = document.getElementById("foundations");
+
+// ---- Tableau + Stock data ----
+const tableauPiles = [];
+let stockStack = [];
+
+// ---- Initialize deck ----
+buildDeck();
+deck = shuffle(deck);
+stockStack = [...deck];
+
+// ---- Render stock ----
+function renderStock() {
+    stockDiv.innerHTML = "";
+    if (stockStack.length === 0) return;
+
+    const topCard = stockStack[stockStack.length - 1];
+    const img = document.createElement("img");
+    img.src = backImg;
+    img.dataset.front = topCard.img;
+    img.dataset.type = topCard.type;
+    img.dataset.rank = topCard.rank;
+    img.classList.add("card");
+
+    img.setAttribute("draggable", "true");
+    addDragBehavior(img);
+
+    stockDiv.appendChild(img);
+}
+
 // ---- Deal tableau ----
 function dealTableau() {
-    let deckIndex = 0;
     for (let i = 0; i < 7; i++) {
-        const pile = tableauPiles[i];
-        pile.innerHTML = ""; // clear any previous cards
+        const pile = document.createElement("div");
+        pile.classList.add("tableau-pile");
+        tableauDiv.appendChild(pile);
+        tableauPiles.push(pile);
 
         for (let j = 0; j <= i; j++) {
-            const cardData = stockStack[deckIndex++];
+            const cardData = stockStack.shift();
             const card = document.createElement("img");
             card.dataset.type = cardData.type;
             card.dataset.rank = cardData.rank;
             card.dataset.front = cardData.img;
             card.classList.add("card");
 
-            // Only bottom card face up
-            if (j === i) {
-                card.src = cardData.img;
-            } else {
-                card.src = backImg;
-            }
-
-            card.style.top = `${j * 30}px`; // fan effect
+            card.src = j === i ? cardData.img : backImg; // bottom card face up
+            card.style.top = `${j * 30}px`;
             card.style.left = "0px";
 
-            // Enable dragging
             card.setAttribute("draggable", "true");
             addDragBehavior(card);
 
             pile.appendChild(card);
         }
-    }
 
-    // Remove dealt cards from stock
-    stockStack = stockStack.slice(deckIndex);
+        enableDrop(pile);
+    }
     renderStock();
 }
 
-// ---- Add drag behavior ----
+// ---- Drag behavior ----
 function addDragBehavior(card) {
     card.addEventListener("dragstart", (e) => {
         e.dataTransfer.setData("text/plain", JSON.stringify({
@@ -72,12 +110,10 @@ function addDragBehavior(card) {
         }));
         card.classList.add("dragging");
     });
-    card.addEventListener("dragend", (e) => {
-        card.classList.remove("dragging");
-    });
+    card.addEventListener("dragend", () => card.classList.remove("dragging"));
 }
 
-// ---- Enable drop zones for tableau and foundations ----
+// ---- Enable drop zones ----
 function enableDrop(targetDiv) {
     targetDiv.addEventListener("dragover", (e) => e.preventDefault());
     targetDiv.addEventListener("drop", (e) => {
@@ -87,7 +123,7 @@ function enableDrop(targetDiv) {
 
         const oldPile = dragging.parentElement;
 
-        // TODO: add tableau/foundation rules here if needed
+        // Move card
         targetDiv.appendChild(dragging);
 
         // Re-fan tableau piles
@@ -96,7 +132,7 @@ function enableDrop(targetDiv) {
     });
 }
 
-// ---- Fan cards in a tableau pile ----
+// ---- Fan tableau pile ----
 function fanTableauPile(pile) {
     const cards = pile.querySelectorAll(".card");
     cards.forEach((card, index) => {
@@ -105,9 +141,16 @@ function fanTableauPile(pile) {
     });
 }
 
-// ---- Initialize game ----
-dealTableau();
-tableauPiles.forEach(p => enableDrop(p));
-const foundationDivs = document.querySelectorAll(".foundation");
-foundationDivs.forEach(f => enableDrop(f));
+// ---- Create foundations ----
+const foundationSuits = ["keys", "cups", "swords", "pentacles", "major"];
+foundationSuits.forEach(suit => {
+    const f = document.createElement("div");
+    f.classList.add("foundation");
+    f.dataset.suit = suit;
+    f.innerHTML = `<strong>${suit.toUpperCase()}</strong>`;
+    foundationsDiv.appendChild(f);
+    enableDrop(f);
+});
 
+// ---- Start game ----
+dealTableau();
