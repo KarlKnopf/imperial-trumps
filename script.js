@@ -94,7 +94,6 @@ function dealTableau() {
         for (let row = 0; row <= col; row++) {
             const card = deck[deckIndex++];
             const img = document.createElement("img");
-            img.src = backImg;
             img.dataset.front = card.img;
             img.dataset.type = card.type;
             img.dataset.rank = card.rank;
@@ -104,9 +103,19 @@ function dealTableau() {
             img.style.left = `0px`;
             img.setAttribute("draggable", "true");
             addDragBehavior(img);
+
+            // **Set face-down for all but the last card**
+            if (row === col) {
+                img.src = card.img; // bottom card face up
+            } else {
+                img.src = backImg;   // face-down
+            }
+
             pile.appendChild(img);
         }
     }
+}
+
 
     // Flip bottom card in each pile
     tableauPiles.forEach(pile => {
