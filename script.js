@@ -40,7 +40,7 @@ function shuffle(array) {
 
 // Build + shuffle
 buildDeck();
-deck = shuffle(deck);
+// deck = shuffle(deck);
 
 // ---- DOM references ----
 const stockDiv = document.getElementById("stock");
