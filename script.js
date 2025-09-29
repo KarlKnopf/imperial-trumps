@@ -127,10 +127,10 @@ function fanTableau() {
     tableauPiles.forEach(pile => {
         const cards = pile.querySelectorAll(".card");
         cards.forEach((card, i) => {
-            card.style.position = "absolute";
-            card.style.top = `${i * 20}px`; // vertical offset
-            card.style.left = `0px`;
-        });
+    card.style.position = "absolute";
+    card.style.top = `${i * 20}px`;   // vertical fanning
+    card.style.left = `0px`;           // aligns left inside pile
+});
     });
 }
 
