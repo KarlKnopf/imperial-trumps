@@ -6,24 +6,18 @@ body {
 }
 
 #stock-container {
-    margin-bottom: 20px;
-}
-
-#stock {
-    width: 100px;
-    min-height: 140px;
-    border: 2px dashed #aaa;
+    margin-bottom: 40px; /* extra space to separate from tableau */
     display: flex;
     justify-content: center;
-    align-items: center;
 }
 
 #tableau-container {
     display: flex;
     justify-content: space-between;
-    width: 1000px; /* enough space for 7 piles */
+    width: 1000px; 
     margin-bottom: 30px;
 }
+
 
 .tableau-pile {
     width: 120px;
@@ -40,3 +34,4 @@ body {
     display: inline-block;
     text-align: center;
 }
+
