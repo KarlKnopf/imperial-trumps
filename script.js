@@ -178,22 +178,16 @@ function enableDrop(targetDiv) {
         }
 
         // ----- Foundation rules -----
-        if (targetDiv.classList.contains("foundation")) {
-            const top = getTopCard(targetDiv);
-            if (top) {
-                const topRank = parseInt(top.dataset.rank);
-                const topType = top.dataset.type;
-                if (!(movingType === topType && movingRank === topRank + 1)) {
-                    return; // must be same suit and next rank
-                }
-            } else {
-                // first card
-                if (movingType === "major") {
-                    if (movingRank !== 1) return; // major starts with Magician
-                } else {
-                    if (movingRank !== 1) return; // others start with Ace
-                }
-            }
+        } else {
+    if (targetDiv.dataset.suit === "major") {
+        // Major Arcana starts with Magician (rank 1)
+        if (movingRank !== 1) return;
+    } else {
+        // Other suits start with Ace
+        if (movingRank !== 1) return;
+    }
+}
+
 
             dragging.style.position = "absolute";
             dragging.style.left = "0px";
