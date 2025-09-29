@@ -1,37 +1,88 @@
+/* ---------------------- */
+/* GENERAL PAGE STYLING   */
+/* ---------------------- */
 body {
-    font-family: sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    font-family: Arial, sans-serif;
+    background-color: #2e2e2e;
+    color: #fff;
+    margin: 0;
+    padding: 20px;
 }
 
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* ---------------------- */
+/* STOCK CONTAINER        */
+/* ---------------------- */
 #stock-container {
-    margin-bottom: 40px; /* extra space to separate from tableau */
     display: flex;
     justify-content: center;
+    margin-bottom: 40px; /* separates stock from tableau */
 }
 
+#stock {
+    display: flex;
+}
+
+/* ---------------------- */
+/* TABLEAU CONTAINER      */
+/* ---------------------- */
 #tableau-container {
     display: flex;
     justify-content: space-between;
-    width: 1000px; 
-    margin-bottom: 30px;
+    width: 1000px; /* adjust based on your layout */
+    margin: 0 auto 30px auto;
 }
 
-
 .tableau-pile {
-    width: 120px;
-    min-height: 250px;
+    width: 120px; /* width of a card */
+    min-height: 200px; /* minimum height for fan */
     border: 2px dashed #aaa;
+    border-radius: 6px;
+    padding: 5px;
     position: relative;
 }
 
-.foundation {
-    width: 100px;
-    min-height: 140px;
-    border: 2px dashed #aaa;
-    margin: 5px;
-    display: inline-block;
-    text-align: center;
+/* ---------------------- */
+/* FOUNDATION CONTAINER   */
+/* ---------------------- */
+#foundations-container {
+    display: flex;
+    justify-content: space-between;
+    width: 1000px;
+    margin: 0 auto;
 }
 
+.foundation {
+    width: 120px;
+    height: 180px;
+    border: 2px dashed #aaa;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    background-color: #333;
+}
+
+/* ---------------------- */
+/* CARDS                  */
+/* ---------------------- */
+.card {
+    width: 120px;
+    height: 180px;
+    border-radius: 6px;
+    cursor: grab;
+    position: absolute; /* for fanning in tableau */
+    user-select: none;
+    transition: transform 0.2s ease;
+}
+
+/* Dragging effect */
+.card.dragging {
+    opacity: 0.7;
+    z-index: 1000;
+}
