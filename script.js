@@ -194,7 +194,13 @@ function enableDrop(targetDiv) {
             dragging.style.top = `${targetDiv.querySelectorAll(".card").length * 5}px`;
         }
 
-        targetDiv.appendChild(dragging);
+        // Move card
+if (targetDiv.classList.contains("foundation")) {
+    targetDiv.insertBefore(dragging, targetDiv.firstChild);
+} else {
+    targetDiv.appendChild(dragging);
+}
+
 
         // re-fan
         if (targetDiv.classList.contains("tableau-pile")) fanTableauPile(targetDiv);
