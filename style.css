@@ -14,7 +14,16 @@ body {
 /* Stock and Tableau */
 #stock {
     width: 120px;
-    margin-right: 40px;
+    height: 160px;
+    position: relative;
+}
+
+#stock img.card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 140px;
 }
 
 .tableau {
@@ -65,5 +74,6 @@ body {
     justify-content: center;
     font-weight: bold;
 }
+
 
 
