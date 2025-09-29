@@ -91,6 +91,25 @@ tableauPiles.forEach((pile, index) => {
     }
 });
 
+// ---- Flip bottom card face up in each tableau pile ----
+function flipTableauBottomCards() {
+    tableauPiles.forEach(pile => {
+        const cards = pile.querySelectorAll(".card");
+        if (cards.length) {
+            // Make all cards face down
+            cards.forEach(card => card.src = backImg);
+
+            // Flip the bottom card face up
+            const bottomCard = cards[cards.length - 1]; // last in DOM is bottom visually
+            bottomCard.src = bottomCard.dataset.front;
+        }
+    });
+}
+
+// Call this after dealing
+dealTableau();
+flipTableauBottomCards();
+
 // ----------------------
 // Build foundations
 // ----------------------
