@@ -1,121 +1,6 @@
-// ----------------------
-// CONFIG
-// ----------------------
-const backImg = "images/back/card78.png";
-let deck = [];
-
-// ----------------------
-// BUILD THE DECK
-// ----------------------
-function buildDeck() {
-    // Major Arcana 0-21
-    for (let i = 0; i <= 21; i++) {
-        deck.push({ type: "major", rank: i + 1, img: `images/major/card${i}.png` });
-    }
-    // Keys 22-35
-    for (let i = 22; i <= 35; i++) {
-        deck.push({ type: "keys", rank: i - 21, img: `images/keys/card${i}.png` });
-    }
-    // Cups 36-49
-    for (let i = 36; i <= 49; i++) {
-        deck.push({ type: "cups", rank: i - 35, img: `images/cups/card${i}.png` });
-    }
-    // Swords 50-63
-    for (let i = 50; i <= 63; i++) {
-        deck.push({ type: "swords", rank: i - 49, img: `images/swords/card${i}.png` });
-    }
-    // Pentacles 64-77
-    for (let i = 64; i <= 77; i++) {
-        deck.push({ type: "pentacles", rank: i - 63, img: `images/pentacles/card${i}.png` });
-    }
-}
-img.setAttribute("draggable", "true");
-
-img.addEventListener("dragstart", (e) => {
-    e.dataTransfer.setData("text/plain", JSON.stringify({
-        type: img.dataset.type,
-        rank: img.dataset.rank,
-        src: img.dataset.front
-    }));
-});
-
-// ----------------------
-// SHUFFLE HELPER
-// ----------------------
-function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
-
-// ----------------------
-// INITIALIZE GAME
-// ----------------------
-buildDeck();
-deck = shuffle(deck);
-
-// ✅ Only declare these ONCE
-const stockDiv = document.getElementById("stock");
-const tableauDiv = document.getElementById("tableau");
-const foundationsDiv = document.getElementById("foundations");
-
-// ---- Stock stack array ----
-let stockStack = [...deck]; // copy of shuffled deck
-
-// ----------------------
-// RENDER STOCK (TOP CARD ONLY)
-// ----------------------
-function renderStock() {
-    stockDiv.innerHTML = ""; // clear previous
-    if (stockStack.length === 0) return; // empty stock
-
-    const topCard = stockStack[stockStack.length - 1];
-    const img = document.createElement("img");
-    img.src = backImg;
-    img.dataset.front = topCard.img;
-    img.dataset.type = topCard.type;
-    img.dataset.rank = topCard.rank;
-    img.classList.add("card");
-
-    img.addEventListener("click", () => {
-        // flip the card
-        img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
-
-        // for now just remove from stock to simulate drawing
-        stockStack.pop();
-        renderStock(); // refresh top card
-    });
-
-    stockDiv.appendChild(img);
-}
-pile.addEventListener("dragover", (e) => {
-    e.preventDefault(); // necessary to allow drop
-});
-
-pile.addEventListener("drop", (e) => {
-    e.preventDefault();
-    const cardData = JSON.parse(e.dataTransfer.getData("text/plain"));
-
-    // Create a new img element for the dropped card
-    const droppedCard = document.createElement("img");
-    droppedCard.src = cardData.src;
-    droppedCard.dataset.type = cardData.type;
-    droppedCard.dataset.rank = cardData.rank;
-    droppedCard.classList.add("card");
-    droppedCard.setAttribute("draggable", "true");
-
-    // Optional: add drag behavior to the newly dropped card
-    addDragBehavior(droppedCard);
-
-    pile.appendChild(droppedCard);
-
-    // Remove card from stockStack if it came from there
-    stockStack = stockStack.filter(c => !(c.type === cardData.type && c.rank == cardData.rank));
-    renderStock(); // refresh stock display
-});
+// ---- Make card draggable ----
 function addDragBehavior(card) {
+    card.setAttribute("draggable", "true");
     card.addEventListener("dragstart", (e) => {
         e.dataTransfer.setData("text/plain", JSON.stringify({
             type: card.dataset.type,
@@ -133,40 +18,9 @@ for (let i = 0; i < 7; i++) {
     pile.classList.add("tableau-pile");
     pile.innerHTML = `<strong>Pile ${i + 1}</strong>`;
     tableauDiv.appendChild(pile);
-}
-pile.addEventListener("dragover", (e) => {
-    e.preventDefault(); // necessary to allow drop
-});
 
-pile.addEventListener("drop", (e) => {
-    e.preventDefault();
-    const cardData = JSON.parse(e.dataTransfer.getData("text/plain"));
-
-    // Create a new img element for the dropped card
-    const droppedCard = document.createElement("img");
-    droppedCard.src = cardData.src;
-    droppedCard.dataset.type = cardData.type;
-    droppedCard.dataset.rank = cardData.rank;
-    droppedCard.classList.add("card");
-    droppedCard.setAttribute("draggable", "true");
-
-    // Optional: add drag behavior to the newly dropped card
-    addDragBehavior(droppedCard);
-
-    pile.appendChild(droppedCard);
-
-    // Remove card from stockStack if it came from there
-    stockStack = stockStack.filter(c => !(c.type === cardData.type && c.rank == cardData.rank));
-    renderStock(); // refresh stock display
-});
-function addDragBehavior(card) {
-    card.addEventListener("dragstart", (e) => {
-        e.dataTransfer.setData("text/plain", JSON.stringify({
-            type: card.dataset.type,
-            rank: card.dataset.rank,
-            src: card.src
-        }));
-    });
+    pile.addEventListener("dragover", (e) => e.preventDefault());
+    pile.addEventListener("drop", (e) => handleDrop(e, pile));
 }
 
 // ----------------------
@@ -179,43 +33,34 @@ foundationSuits.forEach(suit => {
     f.dataset.suit = suit;
     f.innerHTML = `<strong>${suit.toUpperCase()}</strong>`;
     foundationsDiv.appendChild(f);
-});
-pile.addEventListener("dragover", (e) => {
-    e.preventDefault(); // necessary to allow drop
+
+    f.addEventListener("dragover", (e) => e.preventDefault());
+    f.addEventListener("drop", (e) => handleDrop(e, f));
 });
 
-pile.addEventListener("drop", (e) => {
+// ----------------------
+// DROP HANDLER
+// ----------------------
+function handleDrop(e, pile) {
     e.preventDefault();
     const cardData = JSON.parse(e.dataTransfer.getData("text/plain"));
 
-    // Create a new img element for the dropped card
     const droppedCard = document.createElement("img");
     droppedCard.src = cardData.src;
     droppedCard.dataset.type = cardData.type;
     droppedCard.dataset.rank = cardData.rank;
     droppedCard.classList.add("card");
-    droppedCard.setAttribute("draggable", "true");
-
-    // Optional: add drag behavior to the newly dropped card
     addDragBehavior(droppedCard);
 
     pile.appendChild(droppedCard);
 
-    // Remove card from stockStack if it came from there
+    // Remove from stock if it came from there
     stockStack = stockStack.filter(c => !(c.type === cardData.type && c.rank == cardData.rank));
-    renderStock(); // refresh stock display
-});
-function addDragBehavior(card) {
-    card.addEventListener("dragstart", (e) => {
-        e.dataTransfer.setData("text/plain", JSON.stringify({
-            type: card.dataset.type,
-            rank: card.dataset.rank,
-            src: card.src
-        }));
-    });
+    renderStock();
 }
 
 // ----------------------
 // START GAME
 // ----------------------
 renderStock();
+
