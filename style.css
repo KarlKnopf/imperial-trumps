@@ -1,74 +1,24 @@
-body {
-    font-family: sans-serif;
-    background-color: #1a1a1a;
-    color: #fff;
-    padding: 20px;
-}
-
 #stock, #tableau, #foundations {
-    margin-bottom: 20px;
-}
-
-/* Stock area */
-#stock {
-    display: inline-block;
-    width: 120px;
-    height: 180px;
-    border: 2px dashed #888;
-    vertical-align: top;
-}
-
-/* Tableau piles */
-.tableau-pile {
-    position: relative;
-    width: 120px;
-    height: 300px;
+    display: flex;
     margin: 10px;
-    border: 2px dashed #888;
-    display: inline-block;
-    vertical-align: top;
-}
-
-/* Foundations */
-.foundation {
-    position: relative;
-    width: 120px;
-    height: 180px;
-    margin: 10px;
-    border: 2px dashed #888;
-    display: inline-block;
-    vertical-align: top;
-    text-align: center;
-}
-
-/* Cards */
-.card {
-    width: 100px;     /* fixed width */
-    height: 150px;    /* fixed height */
-    cursor: pointer;
-    position: absolute;
-    top: 0;
-    left: 0;
 }
 
 .tableau-pile, .foundation {
     position: relative;
     width: 120px;
-    height: 300px;   /* foundations can stay 180px */
-    margin: 10px;
+    height: 300px;
     border: 2px dashed #888;
+    margin: 5px;
+    text-align: center;
     display: inline-block;
-    vertical-align: top;
-    text-align: center;   /* center children horizontally */
 }
 
-.tableau-pile img.card, .foundation img.card {
+.card {
     width: 100px;
     height: 150px;
     position: absolute;
-    left: 50%;           /* center horizontally */
-    transform: translateX(-50%);  /* center properly */
     cursor: pointer;
 }
+
 
 
