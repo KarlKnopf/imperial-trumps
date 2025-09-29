@@ -86,6 +86,60 @@
         tableauPiles.push(pile);
     }
 
+    <script>
+    const stockDiv = document.getElementById("stock");
+    const foundationsDiv = document.getElementById("foundations");
+    const tableauDiv = document.getElementById("tableau");
+
+    // Create tableau piles
+    const tableauPiles = [];
+    for (let i = 0; i < 7; i++) {
+        const pile = document.createElement("div");
+        pile.classList.add("tableau-pile");
+        pile.innerHTML = `<strong>Pile ${i + 1}</strong>`;
+        tableauDiv.appendChild(pile);
+        tableauPiles.push(pile);
+    }
+
+    // Create foundations
+    const foundationSuits = ["keys", "cups", "swords", "pentacles", "major"];
+    foundationSuits.forEach(suit => {
+        const f = document.createElement("div");
+        f.classList.add("foundation");
+        f.dataset.suit = suit;
+        f.innerHTML = `<strong>${suit.toUpperCase()}</strong>`;
+        foundationsDiv.appendChild(f);
+    });
+
+    // Sample deck
+    const deck = [];
+    for (let i = 0; i < 14; i++) { // just 14 cards as example
+        const card = document.createElement("img");
+        card.classList.add("card");
+        card.src = "images/back/card78.png"; // replace with your back image
+        card.dataset.rank = i+1;
+        card.dataset.type = "sample";
+        deck.push(card);
+    }
+
+    // Deal cards to tableau (fan like Klondike)
+    function dealTableau() {
+        let deckIndex = 0;
+        for (let pileIndex = 0; pileIndex < tableauPiles.length; pileIndex++) {
+            const pile = tableauPiles[pileIndex];
+            for (let j = 0; j <= pileIndex; j++) {
+                if (deckIndex >= deck.length) break;
+                const card = deck[deckIndex++];
+                card.style.top = `${j * 30}px`; // vertical fan
+                pile.appendChild(card);
+            }
+        }
+    }
+
+    dealTableau();
+</script>
+
+
     // Create foundations
     const foundationSuits = ["keys", "cups", "swords", "pentacles", "major"];
     foundationSuits.forEach(suit => {
