@@ -57,7 +57,23 @@ function enableDrop(targetDiv, callback) {
         e.preventDefault();
         const dragging = document.querySelector(".dragging");
         if (!dragging) return;
+
+        // Remember the old pile (parent before drop)
+        const oldPile = dragging.parentElement;
+
+        // Move the card into the new pile
         targetDiv.appendChild(dragging);
+
+        // Re-fan the new pile
+        if (targetDiv.classList.contains("tableau-pile")) {
+            fanTableauPile(targetDiv);
+        }
+
+        // Re-fan the old pile to close the gap
+        if (oldPile && oldPile.classList.contains("tableau-pile")) {
+            fanTableauPile(oldPile);
+        }
+
         callback?.(dragging);
     });
 }
