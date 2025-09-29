@@ -110,6 +110,69 @@ function renderStock() {
 }
 
 // ----------------------
+// ENABLE DROPPING ON TABLEAU AND FOUNDATIONS
+// ----------------------
+function enableDrop(targetDiv) {
+    targetDiv.addEventListener("dragover", (e) => e.preventDefault());
+    targetDiv.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const cardData = JSON.parse(e.dataTransfer.getData("text/plain"));
+        const cardEl = createCardElement(cardData, true);
+
+        // Remove from previous pile or stock
+        removeCardFromAllPiles(cardData);
+
+        // Append to the drop target
+        targetDiv.appendChild(cardEl);
+
+        // Update fanning for tableau piles only
+        if (targetDiv.classList.contains("tableau-pile")) {
+            updateFan(targetDiv);
+        }
+
+        renderStock(); // refresh stock if needed
+    });
+}
+
+function removeCardFromAllPiles(cardData) {
+    // Stock
+    stockStack = stockStack.filter(c => !(c.type === cardData.type && c.rank == cardData.rank));
+    // Tableau piles
+    tableauPiles.forEach(pile => {
+        Array.from(pile.children).forEach(child => {
+            if (child.dataset.type === cardData.type && child.dataset.rank == cardData.rank) {
+                pile.removeChild(child);
+            }
+        });
+    });
+    // Foundations
+    Array.from(foundationsDiv.children).forEach(f => {
+        Array.from(f.children).forEach(child => {
+            if (child.dataset.type === cardData.type && child.dataset.rank == cardData.rank) {
+                f.removeChild(child);
+            }
+        });
+    });
+}
+
+// ----------------------
+// UPDATE FANNING FOR TABLEAU
+// ----------------------
+function updateFan(pile) {
+    const cards = Array.from(pile.children);
+    cards.forEach((card, idx) => {
+        card.style.top = `${30 * idx}px`;
+    });
+}
+
+// ----------------------
+// APPLY TO ALL PILES AND FOUNDATIONS
+// ----------------------
+tableauPiles.forEach(pile => enableDrop(pile));
+Array.from(foundationsDiv.children).forEach(f => enableDrop(f));
+
+
+// ----------------------
 // START GAME
 // ----------------------
 buildDeck();
