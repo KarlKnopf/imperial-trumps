@@ -1,7 +1,8 @@
+// ---- CONFIG ----
 const backImg = "images/back/card78.png";
 let deck = [];
 
-// --- Build Deck ---
+// ---- BUILD DECK ----
 function buildDeck() {
     // Major Arcana 0-21
     for (let i = 0; i <= 21; i++) {
@@ -25,7 +26,7 @@ function buildDeck() {
     }
 }
 
-// --- Shuffle ---
+// ---- SHUFFLE ----
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -34,7 +35,7 @@ function shuffle(array) {
     return array;
 }
 
-// --- Initialize ---
+// ---- INITIALIZE GAME ----
 buildDeck();
 deck = shuffle(deck);
 
@@ -42,9 +43,9 @@ const stockDiv = document.getElementById("stock");
 const tableauDiv = document.getElementById("tableau");
 const foundationsDiv = document.getElementById("foundations");
 
+// ---- STOCK STACK ----
 let stockStack = [...deck];
 
-// --- Render Stock ---
 function renderStock() {
     stockDiv.innerHTML = "";
     if (stockStack.length === 0) return;
@@ -59,33 +60,35 @@ function renderStock() {
 
     img.addEventListener("click", () => {
         img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
+        // For now, just remove from stock as "drawn"
+        stockStack.pop();
+        renderStock();
     });
 
     stockDiv.appendChild(img);
 }
 
-// --- Tableau ---
+// ---- CREATE FOUNDATIONS ----
+const foundationSuits = ["keys", "cups", "swords", "pentacles", "major"];
+foundationSuits.forEach(suit => {
+    const f = document.createElement("div");
+    f.classList.add("foundation");
+    f.dataset.suit = suit;
+    f.innerHTML = `<strong>${suit.toUpperCase()}</strong>`;
+    foundationsDiv.appendChild(f);
+});
+
+// ---- CREATE TABLEAU ----
 const tableauPiles = [];
 for (let i = 0; i < 7; i++) {
     const pile = document.createElement("div");
     pile.classList.add("tableau-pile");
+    pile.style.position = "relative";
     tableauDiv.appendChild(pile);
     tableauPiles.push(pile);
 }
 
 // ---- DEAL TABLEAU ----
-const tableauPiles = [];
-
-// Create 7 piles in the DOM
-for (let i = 0; i < 7; i++) {
-    const pile = document.createElement("div");
-    pile.classList.add("tableau-pile");
-    pile.style.position = "relative"; // allow absolute positioning for stacked cards
-    tableauDiv.appendChild(pile);
-    tableauPiles.push(pile);
-}
-
-// Deal cards from stockStack
 let dealIndex = 0;
 for (let col = 0; col < 7; col++) {
     const pile = tableauPiles[col];
@@ -96,32 +99,52 @@ for (let col = 0; col < 7; col++) {
         img.dataset.type = cardData.type;
         img.dataset.rank = cardData.rank;
 
-        // Only bottom card is face-up
+        // Bottom card face-up
         img.src = row === col ? cardData.img : backImg;
 
         // Stack cards visually
         img.style.position = "absolute";
-        img.style.top = `${row * 30}px`; // overlap
-        img.style.left = `0px`;
+        img.style.top = `${row * 30}px`;
+        img.style.left = "0px";
         img.style.zIndex = row;
 
         pile.appendChild(img);
+        addDragBehavior(img);
         dealIndex++;
     }
 }
-
-// Remove dealt cards from stock
 stockStack = stockStack.slice(dealIndex);
-renderStock();
 
+// ---- DRAG & DROP FUNCTION ----
+function addDragBehavior(card) {
+    card.setAttribute("draggable", "true");
+    card.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData("text/plain", JSON.stringify({
+            type: card.dataset.type,
+            rank: card.dataset.rank,
+            src: card.src
+        }));
+    });
+}
 
+tableauPiles.forEach(pile => {
+    pile.addEventListener("dragover", (e) => e.preventDefault());
+    pile.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const cardData = JSON.parse(e.dataTransfer.getData("text/plain"));
+        const droppedCard = document.createElement("img");
+        droppedCard.src = cardData.src;
+        droppedCard.dataset.type = cardData.type;
+        droppedCard.dataset.rank = cardData.rank;
+        droppedCard.classList.add("card");
+        addDragBehavior(droppedCard);
+        pile.appendChild(droppedCard);
 
-// --- Foundations ---
-const foundationSuits = ["keys", "cups", "swords", "pentacles", "major"];
-foundationSuits.forEach(suit => {
-    const f = document.createElement("div");
-    f.classList.add("foundation");
-    f.dataset.suit = suit;
-    f.innerHTML = `<strong>${suit.toUpperCase()}</strong>`;
-    foundationsDiv.appendChild(f);
+        // Remove from stock if it came from there
+        stockStack = stockStack.filter(c => !(c.type === cardData.type && c.rank == cardData.rank));
+        renderStock();
+    });
 });
+
+// ---- START GAME ----
+renderStock();
