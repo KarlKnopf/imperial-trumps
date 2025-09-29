@@ -64,6 +64,39 @@ body {
     font-size: 0.9em;
 }
 
+#game-area {
+    display: flex;
+    gap: 40px;
+    padding: 20px;
+    align-items: flex-start;
+}
+
+#stock-container, #tableau-container, #foundations-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#tableau-container {
+    flex-direction: row;
+}
+
+.tableau-pile, .foundation, #stock img {
+    width: 120px;
+    min-height: 160px;
+    border: 2px dashed #888;
+    position: relative;
+    padding: 5px;
+}
+
+.foundation {
+    border-color: #555;
+}
+
+#stock img {
+    cursor: pointer;
+}
+
 
 
 
