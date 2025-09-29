@@ -50,3 +50,25 @@ body {
     top: 0;
     left: 0;
 }
+
+.tableau-pile, .foundation {
+    position: relative;
+    width: 120px;
+    height: 300px;   /* foundations can stay 180px */
+    margin: 10px;
+    border: 2px dashed #888;
+    display: inline-block;
+    vertical-align: top;
+    text-align: center;   /* center children horizontally */
+}
+
+.tableau-pile img.card, .foundation img.card {
+    width: 100px;
+    height: 150px;
+    position: absolute;
+    left: 50%;           /* center horizontally */
+    transform: translateX(-50%);  /* center properly */
+    cursor: pointer;
+}
+
+
