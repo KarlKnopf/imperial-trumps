@@ -66,36 +66,22 @@ body {
 
 #game-area {
     display: flex;
-    gap: 40px;
+    gap: 60px; /* space between stock, tableau, foundations */
     padding: 20px;
     align-items: flex-start;
 }
 
-#stock-container, #tableau-container, #foundations-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
 #tableau-container {
+    display: flex;
+    gap: 10px; /* space between tableau piles */
+}
+
+#foundations-container {
+    display: flex;
     flex-direction: row;
+    gap: 10px; /* space between foundations */
 }
 
-.tableau-pile, .foundation, #stock img {
-    width: 120px;
-    min-height: 160px;
-    border: 2px dashed #888;
-    position: relative;
-    padding: 5px;
-}
-
-.foundation {
-    border-color: #555;
-}
-
-#stock img {
-    cursor: pointer;
-}
 
 
 
