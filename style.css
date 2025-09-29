@@ -1,92 +1,30 @@
-/* -------------------- */
-/* GENERAL STYLING      */
-/* -------------------- */
 body {
     font-family: sans-serif;
-    background-color: #2a2a2a;
+    background-color: #2f2f2f;
     color: #fff;
-    margin: 0;
-    padding: 0;
-}
-
-/* Game area contains stock, tableau, foundations */
-#game-area {
-    display: flex;
-    gap: 20px;
-    padding: 20px;
-}
-
-/* -------------------- */
-/* STOCK                */
-/* -------------------- */
-#stock {
-    width: 120px;
-    height: 180px;
-    border: 2px dashed #ccc;
-    position: relative;
-}
-
-/* -------------------- */
-/* TABLEAU              */
-/* -------------------- */
-#tableau {
-    display: flex;
-    gap: 15px; /* spacing between piles */
-}
-
-.tableau-pile {
-    width: 120px;
-    min-height: 180px;
-    border: 2px dashed #aaa;
-    padding: 5px;
-    position: relative;
-}
-
-/* Cards inside tableau pile */
-.tableau-pile img.card {
-    position: absolute;
-    width: 100%;
-    height: auto;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-}
-
-/* -------------------- */
-/* FOUNDATIONS          */
-/* -------------------- */
-#foundations {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    align-items: center;
 }
 
-.foundation {
+#stock, #tableau, #foundations {
+    display: flex;
+    margin: 20px;
+}
+
+.tableau-pile, .foundation {
     width: 120px;
-    min-height: 180px;
-    border: 2px dashed #f1c40f;
-    text-align: center;
-    padding-top: 5px;
+    height: 170px;
+    border: 2px dashed #fff;
+    margin: 0 10px;
     position: relative;
 }
 
-/* -------------------- */
-/* CARDS                */
-/* -------------------- */
 .card {
-    width: 100%;
-    height: auto;
-    cursor: pointer;
-    user-select: none;
+    width: 120px;
+    height: 170px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: grab;
 }
-
-/* Optional: add hover effect */
-.card:hover {
-    transform: scale(1.05);
-    transition: transform 0.2s;
-}
-
-/* -------------------- */
-/* OPTIONAL: FAN EFFECT */
-/* -------------------- */
-/* The JS will dynamically set top positions, but you can set spacing rules here if desired */
