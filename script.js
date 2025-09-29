@@ -135,47 +135,42 @@ function fanTableauPile(pile) {
 
 // ---- DEAL TABLEAU ----
 function dealTableau() {
-    for (let i = 0; i < 7; i++) {
-        const pile = document.createElement("div");
-        pile.classList.add("tableau-pile");
-        pile.style.position = "relative";
-        tableauDiv.appendChild(pile);
-        tableauPiles.push(pile);
-    }
+    // Clear previous tableau
+    tableauDiv.innerHTML = "";
+    tableauPiles.length = 0;
 
     let deckIndex = 0;
-    for (let row = 0; row < 7; row++) {
-        for (let col = row; col < 7; col++) {
-            const card = stockStack[deckIndex];
+
+    for (let col = 0; col < 7; col++) {
+        const pile = document.createElement("div");
+        pile.classList.add("tableau-pile");
+        pile.style.position = "relative"; // allows stacking with offsets
+        tableauDiv.appendChild(pile);
+        tableauPiles.push(pile);
+
+        for (let row = 0; row <= col; row++) {
+            const card = deck[deckIndex++];
             const img = document.createElement("img");
-            img.src = card.img;
+
+            // All cards initially face down
+            img.src = backImg;
+            img.dataset.front = card.img; // store front image
+
             img.dataset.type = card.type;
             img.dataset.rank = card.rank;
             img.classList.add("card");
             img.style.position = "absolute";
-            img.style.top = `${pileOffset(row)}px`;
+            img.style.top = `${row * 30}px`; // vertical fan offset
             img.style.left = `0px`;
             img.setAttribute("draggable", "true");
             addDragBehavior(img);
-            tableauPiles[col].appendChild(img);
-            deckIndex++;
+
+            pile.appendChild(img);
         }
     }
-}
 
-function pileOffset(row) {
-    return row * 30; // adjust overlap
-}
-
-// ---- FLIP BOTTOM CARDS ----
-function flipTableauBottomCards() {
-    tableauPiles.forEach(pile => {
-        const cards = pile.querySelectorAll(".card");
-        if (cards.length) {
-            const bottom = cards[cards.length - 1];
-            bottom.src = bottom.dataset.front || bottom.src;
-        }
-    });
+    // Flip only the bottom card of each pile
+    flipTableauBottomCards();
 }
 
 // ---- FOUNDATIONS ----
