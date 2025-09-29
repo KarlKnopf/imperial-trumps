@@ -166,7 +166,7 @@ foundationSuits.forEach(suit => {
         renderStock();
     });
 });
-
+dealTableau();
 // ----------------------
 // START GAME
 // ----------------------
