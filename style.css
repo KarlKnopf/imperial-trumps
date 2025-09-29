@@ -1,3 +1,6 @@
+/* -------------------- */
+/* GENERAL STYLING      */
+/* -------------------- */
 body {
     font-family: sans-serif;
     background-color: #2a2a2a;
@@ -6,12 +9,16 @@ body {
     padding: 0;
 }
 
+/* Game area contains stock, tableau, foundations */
 #game-area {
     display: flex;
     gap: 20px;
     padding: 20px;
 }
 
+/* -------------------- */
+/* STOCK                */
+/* -------------------- */
 #stock {
     width: 120px;
     height: 180px;
@@ -19,9 +26,12 @@ body {
     position: relative;
 }
 
+/* -------------------- */
+/* TABLEAU              */
+/* -------------------- */
 #tableau {
     display: flex;
-    gap: 15px;
+    gap: 15px; /* spacing between piles */
 }
 
 .tableau-pile {
@@ -32,6 +42,7 @@ body {
     position: relative;
 }
 
+/* Cards inside tableau pile */
 .tableau-pile img.card {
     position: absolute;
     width: 100%;
@@ -41,6 +52,9 @@ body {
     left: 0;
 }
 
+/* -------------------- */
+/* FOUNDATIONS          */
+/* -------------------- */
 #foundations {
     display: flex;
     flex-direction: column;
@@ -53,4 +67,26 @@ body {
     border: 2px dashed #f1c40f;
     text-align: center;
     padding-top: 5px;
+    position: relative;
 }
+
+/* -------------------- */
+/* CARDS                */
+/* -------------------- */
+.card {
+    width: 100%;
+    height: auto;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Optional: add hover effect */
+.card:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s;
+}
+
+/* -------------------- */
+/* OPTIONAL: FAN EFFECT */
+/* -------------------- */
+/* The JS will dynamically set top positions, but you can set spacing rules here if desired */
