@@ -17,14 +17,35 @@ h1 {
 ---------------------- */
 #game-container {
     display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    justify-content: flex-start; /* align items from left */
+    gap: 30px; /* space between stock, tableau, and foundations */
 }
 
-#stock, #tableau, #foundations {
+/* Sidebar for stock */
+#stock {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 120px;
+}
+
+/* Main area for tableau + foundations */
+#main-area {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Tableau */
+#tableau {
+    display: flex;
+    gap: 30px; /* space between piles */
+}
+
+/* Foundations */
+#foundations {
     display: flex;
     gap: 10px;
-    margin: 10px;
 }
 
 /* ----------------------
@@ -102,3 +123,4 @@ h1 {
     font-size: 12px;
     margin-bottom: 5px;
 }
+
