@@ -102,49 +102,46 @@ for (let i = 0; i < 7; i++) {
     renderStock();
 }
 
-// ---- Fan piles visually ----
+// ---- Fan Tableau Pile ----
 function fanTableauPile(pile) {
     const cards = pile.querySelectorAll(".card");
-    cards.forEach((c, i) => {
-        c.style.top = `${60 + i * 30}px`;
-        c.style.position = "absolute";
-        c.style.left = "0px";
+    const offset = 30; // pixels between cards
+    cards.forEach((card, index) => {
+        card.style.position = "absolute";
+        card.style.top = `${index * offset}px`;
+        card.style.left = "0px";
+        card.style.zIndex = index; // ensure top card is on top
+    });
+
+    // Flip bottom card face-up if it's not already
+    if (cards.length > 0) {
+        const bottomCard = cards[cards.length - 1];
+        if (bottomCard.src.includes(backImg)) {
+            bottomCard.src = bottomCard.dataset.front;
+        }
+    }
+}
+
+// ---- Deal Tableau ----
+function dealTableau() {
+    tableauPiles.forEach((pile, i) => {
+        for (let j = 0; j <= i; j++) {
+            const card = stockStack.pop();
+            const img = document.createElement("img");
+            img.src = backImg; // start face-down
+            img.dataset.front = card.img;
+            img.dataset.type = card.type;
+            img.dataset.rank = card.rank;
+            img.classList.add("card");
+            img.setAttribute("draggable", "true");
+            addDragBehavior(img);
+            pile.appendChild(img);
+        }
+        fanTableauPile(pile);
     });
 }
 
-// ---- Stock rendering ----
-function renderStock() {
-    stockDiv.innerHTML = "";
-    if (stockStack.length === 0) return;
-
-    const topCard = stockStack[stockStack.length - 1];
-    const img = document.createElement("img");
-    img.src = backImg;
-    img.dataset.front = topCard.img;
-    img.dataset.type = topCard.type;
-    img.dataset.rank = topCard.rank;
-    img.classList.add("card");
-    img.setAttribute("draggable", "true");
-    addDragBehavior(img);
-
-    img.addEventListener("click", () => {
-        img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
-    });
-
-    stockDiv.appendChild(img);
-}
-
-// ---- Drag & Drop ----
-function addDragBehavior(card) {
-    card.addEventListener("dragstart", () => {
-        card.classList.add("dragging");
-    });
-    card.addEventListener("dragend", () => {
-        card.classList.remove("dragging");
-    });
-}
-
-// ---- Enable drop zones ----
+// ---- Enable Drop Zones ----
 function enableDrop(targetDiv) {
     targetDiv.addEventListener("dragover", (e) => e.preventDefault());
 
@@ -154,36 +151,6 @@ function enableDrop(targetDiv) {
         if (!dragging) return;
 
         const oldPile = dragging.parentElement;
-        const movingType = dragging.dataset.type;
-        const movingRank = parseInt(dragging.dataset.rank);
-
-        // --- Tableau Rules ---
-        if (targetDiv.classList.contains("tableau-pile")) {
-            const top = getTopCard(targetDiv);
-            if (top) {
-                const topRank = parseInt(top.dataset.rank);
-                const topType = top.dataset.type;
-                if (!(isOppositeColor(movingType, topType) && movingRank === topRank - 1)) {
-                    return; // illegal move
-                }
-            } else {
-                if (movingRank !== 14) return; // only King can go to empty pile
-            }
-        }
-
-        // --- Foundation Rules ---
-        if (targetDiv.classList.contains("foundation")) {
-            const top = getTopCard(targetDiv);
-            if (top) {
-                const topRank = parseInt(top.dataset.rank);
-                const topType = top.dataset.type;
-                if (!(movingType === topType && movingRank === topRank + 1)) {
-                    return; // illegal move
-                }
-            } else {
-                if (movingRank !== 1) return; // must start with Ace
-            }
-        }
 
         // Move card
         targetDiv.appendChild(dragging);
@@ -194,8 +161,8 @@ function enableDrop(targetDiv) {
     });
 }
 
-// ---- Foundations ----
-const foundationSuits = ["keys", "cups", "swords", "pentacles", "major"];
+// ---- Initialize Tableau and Foundations ----
+tableauPiles.forEach(p => enableDrop(p));
 foundationSuits.forEach(suit => {
     const f = document.createElement("div");
     f.classList.add("foundation");
@@ -205,5 +172,6 @@ foundationSuits.forEach(suit => {
     enableDrop(f);
 });
 
-// ---- Initialize everything ----
+// ---- Start Game ----
 dealTableau();
+renderStock();
