@@ -159,6 +159,30 @@ foundationSuits.forEach(suit => {
     foundationsDiv.appendChild(f);
 });
 
+// DEAL CARDS TO TABLEAU
+function dealTableau() {
+    for (let i = 0; i < 7; i++) { // 7 piles
+        const pile = tableauDiv.children[i]; // get the pile div
+        for (let j = 0; j <= i; j++) {      // deal i+1 cards to pile i
+            const card = stockStack.pop();   // take from top of stock
+            const img = document.createElement("img");
+            img.src = backImg;               // show back first
+            img.dataset.front = card.img;   // save front image
+            img.dataset.type = card.type;
+            img.dataset.rank = card.rank;
+            img.classList.add("card");
+            img.setAttribute("draggable", "true");
+            addDragBehavior(img);            // allow dragging
+            pile.appendChild(img);
+        }
+    }
+}
+
+// After creating the piles, call:
+dealTableau();
+renderStock(); // still show top of stock
+
+
 // ----------------------
 // START GAME
 // ----------------------
