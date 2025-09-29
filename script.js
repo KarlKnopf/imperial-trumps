@@ -119,8 +119,12 @@ function enableDrop(targetDiv) {
                     return; // illegal move
                 }
             } else {
-                if (movingRank !== 14) return; // only King on empty
+                if (movingRank !== 14) return; // only King can go to empty pile
             }
+
+            // Append and fan cards
+            targetDiv.appendChild(dragging);
+            fanTableauPile(targetDiv);
         }
 
         // --- Foundation Rules ---
@@ -133,16 +137,24 @@ function enableDrop(targetDiv) {
                     return; // illegal move
                 }
             } else {
-                if (movingRank !== 1 && movingType !== "major") return;
+                if (movingRank !== 1) return; // must start with Ace
             }
+
+            // Append to foundation
+            targetDiv.appendChild(dragging);
+            // Make card stack nicely in foundation
+            dragging.style.position = "absolute";
+            dragging.style.top = `${targetDiv.querySelectorAll(".card").length * 5}px`; // 5px offset
+            dragging.style.left = "0";
         }
 
-        targetDiv.appendChild(dragging);
-
-        if (targetDiv.classList.contains("tableau-pile")) fanTableauPile(targetDiv);
-        if (oldPile && oldPile.classList.contains("tableau-pile")) fanTableauPile(oldPile);
+        // Refresh old tableau pile if affected
+        if (oldPile && oldPile.classList.contains("tableau-pile")) {
+            fanTableauPile(oldPile);
+        }
     });
 }
+
 
 // ---- Utility ----
 const darkSuits = ["keys", "swords"];
