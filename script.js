@@ -105,9 +105,10 @@ function enableDrop(targetDiv) {
         const dragging = document.querySelector(".dragging");
         if (!dragging) return;
 
-        const oldPile = dragging.parentElement;
-        const movingType = dragging.dataset.type;
-        const movingRank = parseInt(dragging.dataset.rank);
+        dragging.style.position = "absolute";
+        dragging.style.top = `${(targetDiv.querySelectorAll(".card").length - 1) * 5}px`;
+        dragging.style.left = "0";
+
 
         // --- Tableau Rules ---
         if (targetDiv.classList.contains("tableau-pile")) {
