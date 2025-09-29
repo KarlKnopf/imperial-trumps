@@ -127,6 +127,7 @@ function dealTableau() {
 // ----------------------
 // ENABLE DROP
 // ----------------------
+// ---- Enable drop zones ----
 function enableDrop(targetDiv) {
     targetDiv.addEventListener("dragover", (e) => e.preventDefault());
 
@@ -139,33 +140,57 @@ function enableDrop(targetDiv) {
         const movingType = dragging.dataset.type;
         const movingRank = parseInt(dragging.dataset.rank);
 
-        // --- Tableau rules ---
+        // --- Tableau Rules ---
         if (targetDiv.classList.contains("tableau-pile")) {
             const top = getTopCard(targetDiv);
             if (top) {
                 const topRank = parseInt(top.dataset.rank);
                 const topType = top.dataset.type;
-                if (!(isOppositeColor(movingType, topType) && movingRank === topRank - 1)) return;
-            } else if (movingRank !== 14) return; // Only Kings can go to empty piles
+                if (!(isOppositeColor(movingType, topType) && movingRank === topRank - 1)) {
+                    return; // illegal move
+                }
+            } else {
+                if (movingRank !== 14) return; // only King can go to empty tableau pile
+            }
         }
 
-        // --- Foundation rules ---
+        // --- Foundation Rules ---
         if (targetDiv.classList.contains("foundation")) {
             const top = getTopCard(targetDiv);
-            if (top) {
-                const topRank = parseInt(top.dataset.rank);
-                const topType = top.dataset.type;
-                if (!(movingType === topType && movingRank === topRank + 1)) return;
-            } else if (movingRank !== 1) return; // Must start with Ace
+            const suit = targetDiv.dataset.suit;
+
+            if (suit === "major") {
+                // Major arcana: ascending order, Fool (0) must be last
+                if (top) {
+                    const topRank = parseInt(top.dataset.rank);
+                    if (topRank === 21) { // card before Fool
+                        if (movingRank !== 0) return; // only Fool can be placed last
+                    } else {
+                        if (movingRank !== topRank + 1) return; // must follow ascending order
+                    }
+                } else {
+                    if (movingRank === 0) return; // Fool cannot be first
+                }
+            } else {
+                // Other suits: ascending order starting from Ace = 1
+                if (top) {
+                    const topRank = parseInt(top.dataset.rank);
+                    if (movingRank !== topRank + 1 || movingType !== suit) return;
+                } else {
+                    if (movingRank !== 1) return; // must start with Ace
+                }
+            }
         }
 
+        // --- Move the card ---
         targetDiv.appendChild(dragging);
 
-        // Re-fan tableau piles
+        // --- Re-fan tableau piles if affected ---
         if (targetDiv.classList.contains("tableau-pile")) fanTableauPile(targetDiv);
         if (oldPile && oldPile.classList.contains("tableau-pile")) fanTableauPile(oldPile);
     });
 }
+
 
 // ----------------------
 // FAN TABLEAU
