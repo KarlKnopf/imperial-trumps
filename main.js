@@ -41,40 +41,6 @@ const stockDiv = document.getElementById("stock");
 const tableauDiv = document.getElementById("tableau");
 const foundationsDiv = document.getElementById("foundations");
 
-// Create stock
-deck.forEach(card => {
-    const img = document.createElement("img");
-    img.src = backImg;
-    img.dataset.front = card.img;
-    img.dataset.type = card.type;
-    img.dataset.rank = card.rank;
-    img.classList.add("card");
-
-    // Click to flip stock card
-    img.addEventListener("click", () => {
-        img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
-    });
-
-    stockDiv.appendChild(img);
-});
-
-// Create tableau (7 piles)
-for (let i = 0; i < 7; i++) {
-    const pile = document.createElement("div");
-    pile.classList.add("tableau-pile");
-    tableauDiv.appendChild(pile);
-}
-
-// Create foundations (keys, cups, swords, pentacles, major)
-const foundationSuits = ["keys", "cups", "swords", "pentacles", "major"];
-foundationSuits.forEach(suit => {
-    const f = document.createElement("div");
-    f.classList.add("foundation");
-    f.dataset.suit = suit;
-    f.innerHTML = `<strong>${suit.toUpperCase()}</strong>`;
-    foundationsDiv.appendChild(f);
-});
-
 // ---- Stock stack array ----
 let stockStack = [...deck]; // copy of shuffled deck
 
@@ -105,6 +71,31 @@ function renderStock() {
 
     stockDiv.appendChild(img);
 }
+
+    // Click to flip stock card
+    img.addEventListener("click", () => {
+        img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
+    });
+
+    stockDiv.appendChild(img);
+});
+
+// Create tableau (7 piles)
+for (let i = 0; i < 7; i++) {
+    const pile = document.createElement("div");
+    pile.classList.add("tableau-pile");
+    tableauDiv.appendChild(pile);
+}
+
+// Create foundations (keys, cups, swords, pentacles, major)
+const foundationSuits = ["keys", "cups", "swords", "pentacles", "major"];
+foundationSuits.forEach(suit => {
+    const f = document.createElement("div");
+    f.classList.add("foundation");
+    f.dataset.suit = suit;
+    f.innerHTML = `<strong>${suit.toUpperCase()}</strong>`;
+    foundationsDiv.appendChild(f);
+});
 
 // Initial render
 renderStock();
