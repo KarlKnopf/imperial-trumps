@@ -141,74 +141,66 @@ document.addEventListener("DOMContentLoaded", () => {
     targetDiv.addEventListener("dragover", (e) => e.preventDefault());
 
     targetDiv.addEventListener("drop", (e) => {
-      e.preventDefault();
+        e.preventDefault();
+        const dragging = document.querySelector(".dragging");
+        if (!dragging) return;
 
-      const dragging = document.querySelector(".dragging");
-      if (!dragging) return;
+        const oldPile = dragging.parentElement;
+        const movingType = dragging.dataset.type;
+        const movingRank = parseInt(dragging.dataset.rank);
 
-      const oldParent = dragging.parentElement;
-      const movingType = dragging.dataset.type;
-      const movingRank = parseInt(dragging.dataset.rank, 10);
+        // --- Tableau Rules ---
+        if (targetDiv.classList.contains("tableau-pile")) {
+            const top = getTopCard(targetDiv);
+            if (top) {
+                const topRank = parseInt(top.dataset.rank);
+                const topType = top.dataset.type;
 
-      // --- Tableau rules ---
-      if (targetDiv.classList.contains("tableau-pile")) {
-        const top = getTopCard(targetDiv);
-        if (top) {
-          const topRank = parseInt(top.dataset.rank, 10);
-          const topType = top.dataset.type;
-          if (!(isOppositeColor(movingType, topType) && movingRank === topRank - 1)) {
-            // illegal
-            return;
-          }
-        } else {
-          // empty pile: only King allowed
-          if (movingRank !== 14) return;
-        }
-
-        // append to tableau (absolute positioning inside pile)
-        targetDiv.appendChild(dragging);
-        // ensure card is absolute positioned in pile and refan
-        dragging.style.position = "absolute";
-        dragging.style.left = "0px";
-        // fan both piles
-        fanTableauPile(targetDiv);
-        if (oldParent && oldParent.classList.contains("tableau-pile")) fanTableauPile(oldParent);
-        return;
-      }
-
-      // --- Foundation rules ---
-      if (targetDiv.classList.contains("foundation")) {
-        const suit = targetDiv.dataset.suit; // 'major' or suit name
-        const top = getTopCard(targetDiv);
-
-        if (suit === "major") {
-          // Major arcana special rules:
-          // - empty foundation must start with Magician (rank 1)
-          // - sequence goes 1,2,...,21, then Fool (0) last
-          if (!top) {
-            if (movingRank !== 1 || movingType !== "major") return;
-          } else {
-            const topRank = parseInt(top.dataset.rank, 10);
-            // if topRank is 21, next must be Fool (0)
-            if (topRank === 21) {
-              if (movingRank !== 0 || movingType !== "major") return;
+                if (movingType === "major") {
+                    // Major arcana stack only on one-rank-higher major
+                    if (!(topType === "major" && movingRank === topRank - 1)) {
+                        return; // illegal move
+                    }
+                } else {
+                    // Standard suits: opposite color and descending rank
+                    if (!(isOppositeColor(movingType, topType) && movingRank === topRank - 1)) {
+                        return; // illegal move
+                    }
+                }
             } else {
-              // normal ascending
-              if (movingType !== "major" || movingRank !== topRank + 1) return;
+                // Empty pile rules
+                if (movingType === "major") {
+                    if (movingRank !== 22) return; // only The Fool can start empty major pile
+                } else {
+                    if (movingRank !== 14) return; // only King can start empty pile for other suits
+                }
             }
-          }
-        } else {
-          // Minor suits: must be same suit and ascending rank starting with 1
-          if (!top) {
-            if (movingRank !== 1 || movingType !== suit) return;
-          } else {
-            const topRank = parseInt(top.dataset.rank, 10);
-            if (movingType !== suit || movingRank !== topRank + 1) return;
-          }
         }
 
-        // inside enableDrop -> when dropping on a foundation
-targetDiv.appendChild(dragging);
+        // --- Foundation Rules ---
+        if (targetDiv.classList.contains("foundation")) {
+            const top = getTopCard(targetDiv);
+            if (top) {
+                const topRank = parseInt(top.dataset.rank);
+                const topType = top.dataset.type;
+                if (!(movingType === topType && movingRank === topRank + 1)) {
+                    return; // illegal move
+                }
+            } else {
+                if (movingType !== "major" && movingRank !== 1) return; // must start with Ace for suits
+                if (movingType === "major" && movingRank !== 1) return; // start major foundation with The Magician
+            }
+        }
+
+        // Move card
+        targetDiv.appendChild(dragging);
+
+        // Re-fan tableau piles if affected
+        if (targetDiv.classList.contains("tableau-pile")) fanTableauPile(targetDiv);
+        if (oldPile && oldPile.classList.contains("tableau-pile")) fanTableauPile(oldPile);
+    });
+}
+
 
 // reset any old offsets from tableau
 dragging.style.left = "0px";
