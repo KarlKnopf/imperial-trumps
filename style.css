@@ -1,30 +1,78 @@
+/* General page styling */
 body {
     font-family: sans-serif;
-    background-color: #2f2f2f;
+    background-color: #2e7d32;
     color: #fff;
+    margin: 20px;
+}
+
+/* Game container */
+#game-container {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-#stock, #tableau, #foundations {
+/* Stock area */
+#stock {
+    margin-bottom: 20px;
+    height: 180px;
+}
+
+/* Tableau container */
+#tableau {
     display: flex;
-    margin: 20px;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 40px; /* give space before foundations */
 }
 
-.tableau-pile, .foundation {
-    width: 120px;
-    height: 170px;
-    border: 2px dashed #fff;
-    margin: 0 10px;
+/* Each tableau pile */
+.tableau-pile {
     position: relative;
+    width: 120px;
+    height: 400px;
+    border: 2px dashed #fff;
+    margin-right: 10px;
+    background-color: rgba(0,0,0,0.2);
+    overflow: visible;
 }
 
-.card {
+/* Foundations container */
+#foundations {
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* spacing between foundation piles */
+    margin-top: 40px;
+}
+
+/* Each foundation pile */
+.foundation {
     width: 120px;
-    height: 170px;
+    height: 180px;
+    border: 2px dashed #fff;
+    background-color: rgba(0,0,0,0.3);
+    text-align: center;
+    line-height: 180px;
+    font-weight: bold;
+}
+
+/* Cards styling */
+.card {
+    width: 100px;
+    height: 145px;
     position: absolute;
     top: 0;
     left: 0;
     cursor: grab;
+    user-select: none;
+}
+.card:active {
+    cursor: grabbing;
+}
+
+/* Optional: highlight drop targets */
+.tableau-pile.drag-over,
+.foundation.drag-over {
+    border-color: yellow;
 }
