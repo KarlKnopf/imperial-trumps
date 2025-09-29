@@ -108,7 +108,7 @@ foundationSuits.forEach(suit => {
 });
 
 // ---- CREATE CARD ELEMENT ----
-function createCardElement(card, faceUp = false) {
+function createCardElement(card, faceUp = false, pileIndex = 0, cardIndex = 0) {
     const img = document.createElement("img");
     img.id = card.id;
     img.src = faceUp ? card.img : backImg;
@@ -116,8 +116,11 @@ function createCardElement(card, faceUp = false) {
     img.dataset.type = card.type;
     img.dataset.rank = card.rank;
     img.classList.add("card");
-    img.setAttribute("draggable", "true");
 
+    // Set custom property for fanning
+    img.style.setProperty('--card-index', cardIndex);
+
+    img.setAttribute("draggable", "true");
     img.addEventListener("dragstart", (e) => {
         e.dataTransfer.setData("text/plain", img.id);
     });
@@ -125,14 +128,14 @@ function createCardElement(card, faceUp = false) {
     return img;
 }
 
-// ---- DEAL TABLEAU ----
+// ---- DEAL TABLEAU WITH FAN ----
 function dealTableau() {
     let index = 0;
     for (let pileIndex = 0; pileIndex < 7; pileIndex++) {
         for (let j = 0; j <= pileIndex; j++) {
             const faceUp = (j === pileIndex); // bottom card face up
             const card = stockStack[index];
-            const cardEl = createCardElement(card, faceUp);
+            const cardEl = createCardElement(card, faceUp, pileIndex, j);
             tableauPiles[pileIndex].appendChild(cardEl);
             index++;
         }
@@ -141,6 +144,7 @@ function dealTableau() {
     stockStack = stockStack.slice(28);
     renderStock();
 }
+
 
 // ---- RENDER STOCK ----
 function renderStock() {
