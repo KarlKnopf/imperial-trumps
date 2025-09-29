@@ -74,3 +74,38 @@ foundationSuits.forEach(suit => {
     f.innerHTML = `<strong>${suit.toUpperCase()}</strong>`;
     foundationsDiv.appendChild(f);
 });
+
+// ---- Stock stack array ----
+let stockStack = [...deck]; // copy of shuffled deck
+
+const stockDiv = document.getElementById("stock");
+
+// Function to show top card
+function renderStock() {
+    stockDiv.innerHTML = ""; // clear previous
+    if (stockStack.length === 0) return; // empty stock
+
+    const topCard = stockStack[stockStack.length - 1];
+    const img = document.createElement("img");
+    img.src = backImg; 
+    img.dataset.front = topCard.img;
+    img.dataset.type = topCard.type;
+    img.dataset.rank = topCard.rank;
+    img.classList.add("card");
+
+    img.addEventListener("click", () => {
+        // flip the card
+        img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
+
+        // move to tableau or foundation logic can be added here
+        // for now, just remove from stock as "drawn"
+        stockStack.pop(); 
+        renderStock(); // refresh top card
+    });
+
+    stockDiv.appendChild(img);
+}
+
+// Initial render
+renderStock();
+
