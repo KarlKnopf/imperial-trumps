@@ -47,5 +47,32 @@ body {
     user-select: none;
 }
 
+.tableau-pile {
+    position: relative;           /* so cards stack within */
+    width: 100px;
+    height: 300px;
+    border: 1px dashed #777;
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 10px;
+}
+
+.foundation {
+    position: relative;           /* required for absolute cards */
+    width: 100px;
+    height: 140px;
+    border: 1px dashed #555;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.card {
+    width: 100px;
+    height: 140px;
+    cursor: grab;
+    user-select: none;
+}
+
+
 
 
