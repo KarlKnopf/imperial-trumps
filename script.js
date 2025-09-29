@@ -142,24 +142,24 @@ function dealTableau() {
 }
 
 // ---- Enable Drop Zones ----
-function enableDrop(targetDiv) {
-    targetDiv.addEventListener("dragover", (e) => e.preventDefault());
-
-    targetDiv.addEventListener("drop", (e) => {
-        e.preventDefault();
-        const dragging = document.querySelector(".dragging");
-        if (!dragging) return;
-
-        const oldPile = dragging.parentElement;
-
-        // Move card
-        targetDiv.appendChild(dragging);
-
-        // Re-fan tableau piles if affected
-        if (targetDiv.classList.contains("tableau-pile")) fanTableauPile(targetDiv);
-        if (oldPile && oldPile.classList.contains("tableau-pile")) fanTableauPile(oldPile);
-    });
+function canPlayToFoundation(card, foundationDiv) {
+    const top = getTopCard(foundationDiv);
+    
+    if (card.type === "major") {
+        // always playable on empty foundation for that suit
+        return !top || (card.rank === top.dataset.rank + 1);
+    } else {
+        // minor arcana must wait for major arcana
+        const requiredMajorRank = card.rank; // e.g., Ace = 1, King = 13
+        const majorFoundation = document.querySelector('.foundation[data-suit="major"]');
+        const topMajor = getTopCard(majorFoundation);
+        if (!topMajor || parseInt(topMajor.dataset.rank) < requiredMajorRank) {
+            return false;
+        }
+        return !top || (card.type === top.dataset.type && card.rank === parseInt(top.dataset.rank) + 1);
+    }
 }
+
 
 // ---- Initialize Tableau and Foundations ----
 tableauPiles.forEach(p => enableDrop(p));
