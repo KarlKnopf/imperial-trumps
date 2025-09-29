@@ -29,6 +29,15 @@ function buildDeck() {
         deck.push({ type: "pentacles", rank: i - 63, img: `images/pentacles/card${i}.png` });
     }
 }
+img.setAttribute("draggable", "true");
+
+img.addEventListener("dragstart", (e) => {
+    e.dataTransfer.setData("text/plain", JSON.stringify({
+        type: img.dataset.type,
+        rank: img.dataset.rank,
+        src: img.dataset.front
+    }));
+});
 
 // ----------------------
 // SHUFFLE HELPER
@@ -81,6 +90,40 @@ function renderStock() {
 
     stockDiv.appendChild(img);
 }
+pile.addEventListener("dragover", (e) => {
+    e.preventDefault(); // necessary to allow drop
+});
+
+pile.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const cardData = JSON.parse(e.dataTransfer.getData("text/plain"));
+
+    // Create a new img element for the dropped card
+    const droppedCard = document.createElement("img");
+    droppedCard.src = cardData.src;
+    droppedCard.dataset.type = cardData.type;
+    droppedCard.dataset.rank = cardData.rank;
+    droppedCard.classList.add("card");
+    droppedCard.setAttribute("draggable", "true");
+
+    // Optional: add drag behavior to the newly dropped card
+    addDragBehavior(droppedCard);
+
+    pile.appendChild(droppedCard);
+
+    // Remove card from stockStack if it came from there
+    stockStack = stockStack.filter(c => !(c.type === cardData.type && c.rank == cardData.rank));
+    renderStock(); // refresh stock display
+});
+function addDragBehavior(card) {
+    card.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData("text/plain", JSON.stringify({
+            type: card.dataset.type,
+            rank: card.dataset.rank,
+            src: card.src
+        }));
+    });
+}
 
 // ----------------------
 // CREATE TABLEAU (7 piles)
@@ -90,6 +133,40 @@ for (let i = 0; i < 7; i++) {
     pile.classList.add("tableau-pile");
     pile.innerHTML = `<strong>Pile ${i + 1}</strong>`;
     tableauDiv.appendChild(pile);
+}
+pile.addEventListener("dragover", (e) => {
+    e.preventDefault(); // necessary to allow drop
+});
+
+pile.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const cardData = JSON.parse(e.dataTransfer.getData("text/plain"));
+
+    // Create a new img element for the dropped card
+    const droppedCard = document.createElement("img");
+    droppedCard.src = cardData.src;
+    droppedCard.dataset.type = cardData.type;
+    droppedCard.dataset.rank = cardData.rank;
+    droppedCard.classList.add("card");
+    droppedCard.setAttribute("draggable", "true");
+
+    // Optional: add drag behavior to the newly dropped card
+    addDragBehavior(droppedCard);
+
+    pile.appendChild(droppedCard);
+
+    // Remove card from stockStack if it came from there
+    stockStack = stockStack.filter(c => !(c.type === cardData.type && c.rank == cardData.rank));
+    renderStock(); // refresh stock display
+});
+function addDragBehavior(card) {
+    card.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData("text/plain", JSON.stringify({
+            type: card.dataset.type,
+            rank: card.dataset.rank,
+            src: card.src
+        }));
+    });
 }
 
 // ----------------------
@@ -103,6 +180,40 @@ foundationSuits.forEach(suit => {
     f.innerHTML = `<strong>${suit.toUpperCase()}</strong>`;
     foundationsDiv.appendChild(f);
 });
+pile.addEventListener("dragover", (e) => {
+    e.preventDefault(); // necessary to allow drop
+});
+
+pile.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const cardData = JSON.parse(e.dataTransfer.getData("text/plain"));
+
+    // Create a new img element for the dropped card
+    const droppedCard = document.createElement("img");
+    droppedCard.src = cardData.src;
+    droppedCard.dataset.type = cardData.type;
+    droppedCard.dataset.rank = cardData.rank;
+    droppedCard.classList.add("card");
+    droppedCard.setAttribute("draggable", "true");
+
+    // Optional: add drag behavior to the newly dropped card
+    addDragBehavior(droppedCard);
+
+    pile.appendChild(droppedCard);
+
+    // Remove card from stockStack if it came from there
+    stockStack = stockStack.filter(c => !(c.type === cardData.type && c.rank == cardData.rank));
+    renderStock(); // refresh stock display
+});
+function addDragBehavior(card) {
+    card.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData("text/plain", JSON.stringify({
+            type: card.dataset.type,
+            rank: card.dataset.rank,
+            src: card.src
+        }));
+    });
+}
 
 // ----------------------
 // START GAME
