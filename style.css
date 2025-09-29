@@ -18,13 +18,12 @@ body {
 }
 
 .foundation {
-    width: 100px;
+    position: relative;
+    width: 100px;      /* or whatever fits your cards */
     height: 140px;
-    border: 2px solid #aaa;
-    text-align: center;
-    padding-top: 5px;
-    background-color: #1e1e1e;
+    border: 1px dashed #555;
 }
+
 
 #tableau {
     display: flex;
@@ -47,5 +46,6 @@ body {
     cursor: pointer;
     user-select: none;
 }
+
 
 
