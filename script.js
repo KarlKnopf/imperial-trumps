@@ -96,61 +96,42 @@ function renderStock() {
 // ----------------------
 // CREATE TABLEAU (7 piles, fanned cards)
 // ----------------------
-for (let pileIndex = 0; pileIndex < 7; pileIndex++) {
-    const pile = document.createElement("div");
-    pile.classList.add("tableau-pile");
-    pile.style.display = "inline-block";
-    pile.style.width = "120px";
-    pile.style.height = "600px";
-    pile.style.border = "2px dashed #999";
-    pile.style.marginRight = "20px";
-    pile.style.position = "relative";
+// ---- Deal Tableau ----
+function dealTableau() {
+    for (let pileIndex = 0; pileIndex < 7; pileIndex++) {
+        const pile = document.querySelectorAll(".tableau-pile")[pileIndex];
 
-    // Deal cards into pile (Klondike style)
-    for (let i = 0; i <= pileIndex; i++) {
-        if (stockStack.length === 0) break;
-        const cardData = stockStack.pop();
-        const card = document.createElement("img");
-        card.src = i === pileIndex ? cardData.img : backImg; // only top card face-up
-        card.dataset.front = cardData.img;
-        card.dataset.type = cardData.type;
-        card.dataset.rank = cardData.rank;
-        card.classList.add("card");
-        card.setAttribute("draggable", "true");
-        card.style.position = "absolute";
-        card.style.top = `${i * 60}px`;
-        card.style.left = "0px";
-        card.style.width = "100px";
-        card.style.height = "150px";
-        addDragBehavior(card);
-        pile.appendChild(card);
+        // Deal pileIndex + 1 cards to this pile
+        for (let cardIndex = 0; cardIndex <= pileIndex; cardIndex++) {
+            const card = stockStack.pop(); // take from stock
+            if (!card) continue;
+
+            // Find the stock img element
+            const img = document.querySelector(`#stock img[data-rank='${card.rank}'][data-type='${card.type}']`);
+            if (!img) continue;
+
+            // Move img to the pile
+            pile.appendChild(img);
+            img.style.position = "absolute";
+            img.style.top = `${cardIndex * 30}px`; // vertical fan
+            img.style.left = "0px"; // aligned to left of pile
+
+            // Optional: flip first card in pile face up
+            if (cardIndex === pileIndex) {
+                img.src = card.img;
+            } else {
+                img.src = backImg;
+            }
+
+            // Make draggable
+            addDragBehavior(img);
+        }
     }
 
-    // Drag & drop behavior for pile
-    pile.addEventListener("dragover", (e) => e.preventDefault());
-    pile.addEventListener("drop", (e) => {
-        e.preventDefault();
-        const cardData = JSON.parse(e.dataTransfer.getData("text/plain"));
-        const droppedCard = document.createElement("img");
-        droppedCard.src = cardData.src;
-        droppedCard.dataset.type = cardData.type;
-        droppedCard.dataset.rank = cardData.rank;
-        droppedCard.classList.add("card");
-        droppedCard.setAttribute("draggable", "true");
-        addDragBehavior(droppedCard);
-        // stack new card with offset
-        droppedCard.style.position = "absolute";
-        droppedCard.style.top = `${pile.children.length * 30}px`;
-        droppedCard.style.left = "0px";
-        droppedCard.style.width = "100px";
-        droppedCard.style.height = "150px";
-        pile.appendChild(droppedCard);
-        stockStack = stockStack.filter(c => !(c.type === cardData.type && c.rank == cardData.rank));
-        renderStock();
-    });
-
-    tableauDiv.appendChild(pile);
+    // Refresh stock after dealing
+    renderStock();
 }
+
 
 // ----------------------
 // CREATE FOUNDATIONS
