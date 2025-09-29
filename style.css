@@ -5,16 +5,16 @@ body {
     text-align: center;
 }
 
-.card-container {
+.card-container, .tableau-container, .foundations-container {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    margin: 20px;
+    margin: 10px;
     gap: 10px;
 }
 
 .card {
-    width: 100px;   /* adjust as needed */
+    width: 100px;
     height: 150px;
     cursor: pointer;
     border-radius: 8px;
@@ -26,4 +26,7 @@ body {
     transform: scale(1.1);
 }
 
+.tableau-container, .foundations-container {
+    min-height: 160px;
+}
 
