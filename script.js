@@ -71,6 +71,7 @@ for (let i = 0; i < 7; i++) {
 }
 
 // ---- DEAL TABLEAU ----
+img.id = `card-${cardData.type}-${cardData.rank}-${col}-${row}`;
 let dealIndex = 0;
 for (let col = 0; col < 7; col++) {
     const pile = tableauPiles[col];
@@ -100,12 +101,12 @@ stockStack = stockStack.slice(dealIndex);
 // ---- DRAG & DROP ----
 function addDragBehavior(card) {
     card.setAttribute("draggable", "true");
-    card.addEventListener("dragstart", (e) => {
-        e.dataTransfer.setData("text/plain", JSON.stringify({
-            type: card.dataset.type,
-            rank: card.dataset.rank,
-            src: card.src
-        }));
+   card.addEventListener("dragstart", (e) => {
+    e.dataTransfer.setData("text/plain", card.id); // each card needs a unique id
+});
+        const cardId = e.dataTransfer.getData("text/plain");
+const cardEl = document.getElementById(cardId);
+pile.appendChild(cardEl);
     });
 }
 
