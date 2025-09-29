@@ -1,22 +1,4 @@
-/* ---------------------- */
-/* GENERAL PAGE STYLING   */
-/* ---------------------- */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #2e2e2e;
-    color: #fff;
-    margin: 0;
-    padding: 20px;
-}
-
-h1 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-/* ---------------------- */
-/* STOCK CONTAINER        */
-/* ---------------------- */
+/* Overall game container */
 #game-container {
     display: flex;
     flex-direction: column; /* tableau on top, foundations below */
@@ -75,13 +57,3 @@ h1 {
     top: 0;
     left: 0;
 }
-
-
-/* Dragging effect */
-.card.dragging {
-    opacity: 0.7;
-    z-index: 1000;
-}
-
-
-
