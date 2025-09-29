@@ -37,53 +37,10 @@ function shuffle(array) {
 buildDeck();
 deck = shuffle(deck);
 
+// ✅ Only declared ONCE
 const stockDiv = document.getElementById("stock");
 const tableauDiv = document.getElementById("tableau");
 const foundationsDiv = document.getElementById("foundations");
 
-// ---- Stock stack ----
-let stockStack = [...deck];
-
-// Show only the top card of stock
-function renderStock() {
-    stockDiv.innerHTML = ""; // clear previous
-    if (stockStack.length === 0) return; // nothing left
-
-    const topCard = stockStack[stockStack.length - 1];
-
-    const img = document.createElement("img");
-    img.src = backImg;
-    img.dataset.front = topCard.img;
-    img.dataset.type = topCard.type;
-    img.dataset.rank = topCard.rank;
-    img.classList.add("card");
-
-    img.addEventListener("click", () => {
-        img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
-        // remove top card from stock after flipping
-        stockStack.pop();
-        renderStock(); // refresh to show next card
-    });
-
-    stockDiv.appendChild(img);
-}
-
-// Create tableau (7 piles)
-for (let i = 0; i < 7; i++) {
-    const pile = document.createElement("div");
-    pile.classList.add("tableau-pile");
-    tableauDiv.appendChild(pile);
-}
-
-// Create foundations
-const foundationSuits = ["keys", "cups", "swords", "pentacles", "major"];
-foundationSuits.forEach(suit => {
-    const f = document.createElement("div");
-    f.classList.add("foundation");
-    f.dataset.suit = suit;
-    f.innerHTML = `<strong>${suit.toUpperCase()}</strong>`;
-    foundationsDiv.appendChild(f);
-});
-
-// ---- Initial render ----
-renderStock();
+// ---- Stock stack array ----
+let stockStack = [...deck]; // copy of shuffled deck
