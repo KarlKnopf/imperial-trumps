@@ -133,17 +133,17 @@ function dealTableau() {
     let index = 0;
     for (let pileIndex = 0; pileIndex < 7; pileIndex++) {
         for (let j = 0; j <= pileIndex; j++) {
-            const faceUp = (j === pileIndex); // bottom card face up
             const card = stockStack[index];
+            const faceUp = (j === pileIndex); // bottom card face up
             const cardEl = createCardElement(card, faceUp, pileIndex, j);
             tableauPiles[pileIndex].appendChild(cardEl);
             index++;
         }
     }
-    // remove dealt cards from stock
-    stockStack = stockStack.slice(28);
+    stockStack = stockStack.slice(28); // remove dealt cards
     renderStock();
 }
+
 
 
 // ---- RENDER STOCK ----
