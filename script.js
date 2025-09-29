@@ -32,7 +32,8 @@ function shuffle(array) {
 const stockDiv = document.getElementById("stock");
 const tableauDiv = document.getElementById("tableau");
 const foundationsDiv = document.getElementById("foundations");
-
+const darkSuits = ["keys", "swords"];
+const lightSuits = ["cups", "pentacles"];
 // ----------------------
 // INITIALIZE GAME
 // ----------------------
@@ -50,6 +51,52 @@ function addDragBehavior(card) {
     });
     card.addEventListener("dragend", () => card.classList.remove("dragging"));
 }
+targetDiv.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const dragging = document.querySelector(".dragging");
+    if (!dragging) return;
+
+    const oldPile = dragging.parentElement;
+    const movingType = dragging.dataset.type;
+    const movingRank = parseInt(dragging.dataset.rank);
+
+    // Tableau rules
+    if (targetDiv.classList.contains("tableau-pile")) {
+        const top = getTopCard(targetDiv);
+        if (top) {
+            const topRank = parseInt(top.dataset.rank);
+            const topType = top.dataset.type;
+            if (!(isOppositeColor(movingType, topType) && movingRank === topRank - 1)) {
+                return; // illegal move
+            }
+        } else {
+            if (movingRank !== 14) { // only kings to empty piles
+                return; // illegal move
+            }
+        }
+    }
+
+    // Foundation rules
+    if (targetDiv.classList.contains("foundation")) {
+        const top = getTopCard(targetDiv);
+        if (top) {
+            const topRank = parseInt(top.dataset.rank);
+            const topType = top.dataset.type;
+            if (!(movingType === topType && movingRank === topRank + 1)) {
+                return; // illegal move
+            }
+        } else {
+            if (movingRank !== 1) { // only aces to empty foundations
+                return; // illegal move
+            }
+        }
+    }
+
+    // Move the card
+    targetDiv.appendChild(dragging);
+    if (targetDiv.classList.contains("tableau-pile")) fanTableauPile(targetDiv);
+    if (oldPile && oldPile.classList.contains("tableau-pile")) fanTableauPile(oldPile);
+});
 
 function enableDrop(targetDiv, callback) {
     targetDiv.addEventListener("dragover", (e) => e.preventDefault());
@@ -76,6 +123,15 @@ function enableDrop(targetDiv, callback) {
 
         callback?.(dragging);
     });
+}
+function getTopCard(pileDiv) {
+  const cards = pileDiv.querySelectorAll(".card");
+  return cards[cards.length - 1] || null;
+}
+
+function isOppositeColor(a, b) {
+  return (darkSuits.includes(a) && lightSuits.includes(b)) ||
+         (lightSuits.includes(a) && darkSuits.includes(b));
 }
 
 // ----------------------
