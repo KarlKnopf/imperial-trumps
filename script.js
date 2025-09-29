@@ -89,7 +89,7 @@ for (let col = 0; col < 7; col++) {
 
         // Stack cards with vertical offset
         img.style.position = "absolute";
-        img.style.top = `${row * 30}px`;
+        img.style.top = `${row * 60}px`;
         img.style.left = `0px`;
         img.style.zIndex = row;
 
