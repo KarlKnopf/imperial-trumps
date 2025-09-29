@@ -73,7 +73,19 @@ for (let i = 0; i < 7; i++) {
     tableauPiles.push(pile);
 }
 
-// Deal tableau cards
+// ---- DEAL TABLEAU ----
+const tableauPiles = [];
+
+// Create 7 piles in the DOM
+for (let i = 0; i < 7; i++) {
+    const pile = document.createElement("div");
+    pile.classList.add("tableau-pile");
+    pile.style.position = "relative"; // allow absolute positioning for stacked cards
+    tableauDiv.appendChild(pile);
+    tableauPiles.push(pile);
+}
+
+// Deal cards from stockStack
 let dealIndex = 0;
 for (let col = 0; col < 7; col++) {
     const pile = tableauPiles[col];
@@ -84,12 +96,12 @@ for (let col = 0; col < 7; col++) {
         img.dataset.type = cardData.type;
         img.dataset.rank = cardData.rank;
 
-        // Only bottom card face-up
+        // Only bottom card is face-up
         img.src = row === col ? cardData.img : backImg;
 
-        // Stack cards with vertical offset
+        // Stack cards visually
         img.style.position = "absolute";
-        img.style.top = `${row * 60}px`;
+        img.style.top = `${row * 30}px`; // overlap
         img.style.left = `0px`;
         img.style.zIndex = row;
 
@@ -101,6 +113,7 @@ for (let col = 0; col < 7; col++) {
 // Remove dealt cards from stock
 stockStack = stockStack.slice(dealIndex);
 renderStock();
+
 
 
 // --- Foundations ---
