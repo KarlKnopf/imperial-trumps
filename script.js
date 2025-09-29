@@ -76,6 +76,7 @@ for (let i = 0; i < 7; i++) {
 // Deal tableau cards
 let dealIndex = 0;
 for (let col = 0; col < 7; col++) {
+    const pile = tableauPiles[col];
     for (let row = 0; row <= col; row++) {
         const cardData = stockStack[dealIndex];
         const img = document.createElement("img");
@@ -86,10 +87,12 @@ for (let col = 0; col < 7; col++) {
         // Only bottom card face-up
         img.src = row === col ? cardData.img : backImg;
 
+        // Stack cards with vertical offset
+        img.style.position = "absolute";
         img.style.top = `${row * 30}px`;
+        img.style.left = `0px`;
         img.style.zIndex = row;
 
-        pile = tableauPiles[col];
         pile.appendChild(img);
         dealIndex++;
     }
@@ -98,6 +101,7 @@ for (let col = 0; col < 7; col++) {
 // Remove dealt cards from stock
 stockStack = stockStack.slice(dealIndex);
 renderStock();
+
 
 // --- Foundations ---
 const foundationSuits = ["keys", "cups", "swords", "pentacles", "major"];
