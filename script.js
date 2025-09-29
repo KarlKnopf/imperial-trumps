@@ -76,6 +76,23 @@ function createTableau() {
     }
 }
 
+function dealTableau() {
+    tableauPiles.forEach((pile, pileIndex) => {
+        for (let i = 0; i <= pileIndex; i++) { // standard Klondike deal: pile 0 gets 1 card, pile 1 gets 2, etc.
+            const card = stockStack.pop();
+            if (!card) return;
+            const img = document.createElement("img");
+            img.src = backImg;
+            img.dataset.front = card.img;
+            img.dataset.type = card.type;
+            img.dataset.rank = card.rank;
+            img.classList.add("card");
+            pile.appendChild(img);
+        }
+    });
+}
+
+
 function fanTableauPile(pile) {
     const cards = Array.from(pile.querySelectorAll(".card"));
     cards.forEach((c, index) => {
