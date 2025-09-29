@@ -3,10 +3,15 @@ let deck = [];
 
 // ---- Build deck ----
 function buildDeck() {
+    // Major Arcana 0-21
     for (let i = 0; i <= 21; i++) deck.push({ type: "major", rank: i + 1, img: `images/major/card${i}.png` });
+    // Keys 22-35
     for (let i = 22; i <= 35; i++) deck.push({ type: "keys", rank: i - 21, img: `images/keys/card${i}.png` });
+    // Cups 36-49
     for (let i = 36; i <= 49; i++) deck.push({ type: "cups", rank: i - 35, img: `images/cups/card${i}.png` });
+    // Swords 50-63
     for (let i = 50; i <= 63; i++) deck.push({ type: "swords", rank: i - 49, img: `images/swords/card${i}.png` });
+    // Pentacles 64-77
     for (let i = 64; i <= 77; i++) deck.push({ type: "pentacles", rank: i - 63, img: `images/pentacles/card${i}.png` });
 }
 
@@ -26,9 +31,9 @@ const stockDiv = document.getElementById("stock");
 const tableauDiv = document.getElementById("tableau");
 const foundationsDiv = document.getElementById("foundations");
 
+// ---- Stock stack array ----
 let stockStack = [...deck];
 
-// ---- Render Stock ----
 function renderStock() {
     stockDiv.innerHTML = "";
     if (stockStack.length === 0) return;
@@ -43,61 +48,39 @@ function renderStock() {
 
     img.addEventListener("click", () => {
         img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
-        stockStack.pop();
-        renderStock();
     });
 
     stockDiv.appendChild(img);
 }
 
-// ---- Add Drag Behavior ----
-function addDragBehavior(card) {
-    card.setAttribute("draggable", "true");
-    card.addEventListener("dragstart", (e) => {
-        e.dataTransfer.setData("text/plain", JSON.stringify({
-            type: card.dataset.type,
-            rank: card.dataset.rank,
-            src: card.src
-        }));
-    });
-}
-
-// ---- Create Tableau Piles ----
+// ---- Create Tableau (7 piles) ----
+let tableauPiles = [];
 for (let i = 0; i < 7; i++) {
     const pile = document.createElement("div");
     pile.classList.add("tableau-pile");
     pile.innerHTML = `<strong>Pile ${i + 1}</strong>`;
     tableauDiv.appendChild(pile);
-
-    pile.addEventListener("dragover", (e) => e.preventDefault());
-    pile.addEventListener("drop", (e) => {
-        e.preventDefault();
-        const cardData = JSON.parse(e.dataTransfer.getData("text/plain"));
-        const droppedCard = document.createElement("img");
-        droppedCard.src = cardData.src;
-        droppedCard.dataset.type = cardData.type;
-        droppedCard.dataset.rank = cardData.rank;
-        droppedCard.classList.add("card");
-        addDragBehavior(droppedCard);
-
-        pile.appendChild(droppedCard);
-        fanCardsInPile(pile);
-
-        stockStack = stockStack.filter(c => !(c.type === cardData.type && c.rank == cardData.rank));
-        renderStock();
-    });
+    tableauPiles.push(pile);
 }
 
-// ---- Fan Cards in Tableau ----
-function fanCardsInPile(pile) {
-    const cards = Array.from(pile.querySelectorAll("img"));
-    cards.forEach((card, i) => {
-        card.style.top = `${i * 20}px`;   // vertical fanning
-        card.style.left = `0px`;
-    });
-}
+// ---- Deal some cards to tableau ----
+tableauPiles.forEach((pile, index) => {
+    for (let j = 0; j <= index; j++) {
+        const cardData = stockStack.pop();
+        const card = document.createElement("img");
+        card.src = backImg;
+        card.dataset.front = cardData.img;
+        card.dataset.type = cardData.type;
+        card.dataset.rank = cardData.rank;
+        card.classList.add("card");
+        card.style.top = `${j * 30}px`;
+        card.style.left = "50%";
+        card.style.transform = "translateX(-50%)";
+        pile.appendChild(card);
+    }
+});
 
-// ---- Create Foundations ----
+// ---- Create Foundations (5 suits) ----
 const foundationSuits = ["keys", "cups", "swords", "pentacles", "major"];
 foundationSuits.forEach(suit => {
     const f = document.createElement("div");
@@ -105,22 +88,7 @@ foundationSuits.forEach(suit => {
     f.dataset.suit = suit;
     f.innerHTML = `<strong>${suit.toUpperCase()}</strong>`;
     foundationsDiv.appendChild(f);
-    f.addEventListener("dragover", (e) => e.preventDefault());
-    f.addEventListener("drop", (e) => {
-        e.preventDefault();
-        const cardData = JSON.parse(e.dataTransfer.getData("text/plain"));
-        const droppedCard = document.createElement("img");
-        droppedCard.src = cardData.src;
-        droppedCard.dataset.type = cardData.type;
-        droppedCard.dataset.rank = cardData.rank;
-        droppedCard.classList.add("card");
-        addDragBehavior(droppedCard);
-
-        f.appendChild(droppedCard);
-        stockStack = stockStack.filter(c => !(c.type === cardData.type && c.rank == cardData.rank));
-        renderStock();
-    });
 });
 
-// ---- Start Game ----
+// ---- Initial render ----
 renderStock();
