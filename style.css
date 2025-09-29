@@ -26,11 +26,15 @@ body {
 }
 
 .tableau-pile, .foundation {
-    border: 2px dashed #999;
-    min-width: 100px;
-    min-height: 150px;
-    position: relative;
+    position: relative;      /* so child cards are positioned relative to this div */
+    width: 120px;            /* adjust to match your card width */
+    height: 300px;           /* adjust to allow fanning */
+    margin: 10px;
+    border: 2px dashed #888;
+    display: inline-block;   /* makes piles sit side by side */
+    vertical-align: top;
 }
+
 
 .card {
     width: 100px;
@@ -38,6 +42,7 @@ body {
     cursor: pointer;
     position: absolute; /* allows dragging without overlapping layout */
 }
+
 
 
 
