@@ -1,12 +1,7 @@
-// ----------------------
-// CONFIG
-// ----------------------
 const backImg = "images/back/card78.png";
 let deck = [];
 
-// ----------------------
-// BUILD DECK
-// ----------------------
+// ---- Build deck ----
 function buildDeck() {
     // Major Arcana 0-21
     for (let i = 0; i <= 21; i++) {
@@ -30,9 +25,7 @@ function buildDeck() {
     }
 }
 
-// ----------------------
-// SHUFFLE
-// ----------------------
+// ---- Shuffle ----
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -41,46 +34,8 @@ function shuffle(array) {
     return array;
 }
 
-// ----------------------
-// INITIALIZE GAME
-// ----------------------
-buildDeck();
-deck = shuffle(deck);
-
-const stockDiv = document.getElementById("stock");
-const tableauDiv = document.getElementById("tableau");
-const foundationsDiv = document.getElementById("foundations");
-
-let stockStack = [...deck]; // copy for stock
-
-// ----------------------
-// RENDER STOCK
-// ----------------------
-function renderStock() {
-    stockDiv.innerHTML = "";
-    if (stockStack.length === 0) return;
-
-    const topCard = stockStack[stockStack.length - 1];
-    const img = document.createElement("img");
-    img.src = backImg;
-    img.dataset.front = topCard.img;
-    img.dataset.type = topCard.type;
-    img.dataset.rank = topCard.rank;
-    img.classList.add("card");
-
-    img.addEventListener("click", () => {
-        // flip
-        img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
-    });
-
-    stockDiv.appendChild(img);
-}
-
-// ----------------------
-// ADD DRAG BEHAVIOR
-// ----------------------
+// ---- Drag behavior ----
 function addDragBehavior(card) {
-    card.setAttribute("draggable", "true");
     card.addEventListener("dragstart", (e) => {
         e.dataTransfer.setData("text/plain", JSON.stringify({
             type: card.dataset.type,
@@ -90,38 +45,16 @@ function addDragBehavior(card) {
     });
 }
 
-// ----------------------
-// CREATE TABLEAU (7 piles)
-// ----------------------
-for (let i = 0; i < 7; i++) {
-    const pile = document.createElement("div");
-    pile.classList.add("tableau-pile");
-    pile.innerHTML = `<strong>Pile ${i + 1}</strong>`;
-    tableauDiv.appendChild(pile);
+// ---- Initialize game ----
+buildDeck();
+deck = shuffle(deck);
 
-    pile.addEventListener("dragover", (e) => e.preventDefault());
-    pile.addEventListener("drop", (e) => {
-        e.preventDefault();
-        const cardData = JSON.parse(e.dataTransfer.getData("text/plain"));
-        const droppedCard = document.createElement("img");
-        droppedCard.src = cardData.src;
-        droppedCard.dataset.type = cardData.type;
-        droppedCard.dataset.rank = cardData.rank;
-        droppedCard.classList.add("card");
-        addDragBehavior(droppedCard);
-        pile.appendChild(droppedCard);
+const stockDiv = document.getElementById("stock");
+const tableauDiv = document.getElementById("tableau");
+const foundationsDiv = document.getElementById("foundations");
 
-        // remove from stock if drawn
-        stockStack = stockStack.filter(c => !(c.type === cardData.type && c.rank == cardData.rank));
-        renderStock();
-    });
-}
-
-// ----------------------
-// DEAL TABLEAU
-// ----------------------
-// Deal tableau: 7 piles
-let deckIndex = 0; // keep track of where we are in the deck
+// ---- Deal tableau ----
+let deckIndex = 0;
 for (let i = 0; i < 7; i++) {
     const pile = document.createElement("div");
     pile.classList.add("tableau-pile");
@@ -133,27 +66,43 @@ for (let i = 0; i < 7; i++) {
         img.classList.add("card");
         img.dataset.type = card.type;
         img.dataset.rank = card.rank;
-
-        // If it's the bottom card in this pile, show front; otherwise, back
-        if (j === i) {
-            img.src = card.img; // face up
-        } else {
-            img.src = backImg; // face down
-        }
-
-        // Make cards draggable
         img.setAttribute("draggable", "true");
-        addDragBehavior(img);
 
+        // Only the bottom card is face-up
+        img.src = (j === i) ? card.img : backImg;
+
+        addDragBehavior(img);
         pile.appendChild(img);
         deckIndex++;
     }
 }
 
+// ---- Stock ----
+let stockStack = deck.slice(deckIndex);
 
-// ----------------------
-// CREATE FOUNDATIONS (5 suits)
-// ----------------------
+function renderStock() {
+    stockDiv.innerHTML = "";
+    if (stockStack.length === 0) return;
+
+    const topCard = stockStack[stockStack.length - 1];
+    const img = document.createElement("img");
+    img.src = backImg;
+    img.dataset.front = topCard.img;
+    img.dataset.type = topCard.type;
+    img.dataset.rank = topCard.rank;
+    img.classList.add("card");
+    img.setAttribute("draggable", "true");
+
+    img.addEventListener("click", () => {
+        img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
+        stockStack.pop();
+        renderStock();
+    });
+
+    stockDiv.appendChild(img);
+}
+
+// ---- Create foundations ----
 const foundationSuits = ["keys", "cups", "swords", "pentacles", "major"];
 foundationSuits.forEach(suit => {
     const f = document.createElement("div");
@@ -161,26 +110,7 @@ foundationSuits.forEach(suit => {
     f.dataset.suit = suit;
     f.innerHTML = `<strong>${suit.toUpperCase()}</strong>`;
     foundationsDiv.appendChild(f);
-
-    f.addEventListener("dragover", e => e.preventDefault());
-    f.addEventListener("drop", e => {
-        e.preventDefault();
-        const cardData = JSON.parse(e.dataTransfer.getData("text/plain"));
-        const droppedCard = document.createElement("img");
-        droppedCard.src = cardData.src;
-        droppedCard.dataset.type = cardData.type;
-        droppedCard.dataset.rank = cardData.rank;
-        droppedCard.classList.add("card");
-        addDragBehavior(droppedCard);
-        f.appendChild(droppedCard);
-
-        stockStack = stockStack.filter(c => !(c.type === cardData.type && c.rank == cardData.rank));
-        renderStock();
-    });
 });
 
-// ----------------------
-// START GAME
-// ----------------------
-dealTableau();
+// ---- Initial render ----
 renderStock();
