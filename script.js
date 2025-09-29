@@ -91,11 +91,14 @@ function getTopCard(pileDiv) {
 
 function fanTableauPile(pileDiv) {
     const cards = pileDiv.querySelectorAll(".card");
-    cards.forEach((c, i) => {
-        c.style.position = "absolute";
-        c.style.top = `${i * 30}px`; // vertical offset for fan
+    cards.forEach((card, i) => {
+        card.style.position = "absolute";
+        card.style.left = "0px";
+        card.style.top = `${i * 30}px`;   // 30px vertical offset
+        card.style.zIndex = i;
     });
 }
+
 
 function enableDrop(targetDiv) {
     targetDiv.addEventListener("dragover", (e) => e.preventDefault());
@@ -105,9 +108,60 @@ function enableDrop(targetDiv) {
         const dragging = document.querySelector(".dragging");
         if (!dragging) return;
 
-        dragging.style.position = "absolute";
-        dragging.style.top = `${(targetDiv.querySelectorAll(".card").length - 1) * 5}px`;
-        dragging.style.left = "0";
+        const oldPile = dragging.parentElement;
+        const movingType = dragging.dataset.type;
+        const movingRank = parseInt(dragging.dataset.rank);
+
+        // ----- Tableau Rules -----
+        if (targetDiv.classList.contains("tableau-pile")) {
+            const top = getTopCard(targetDiv);
+            if (top) {
+                const topRank = parseInt(top.dataset.rank);
+                const topType = top.dataset.type;
+                if (!(isOppositeColor(movingType, topType) && movingRank === topRank - 1)) {
+                    return;   // illegal move
+                }
+            } else {
+                if (movingRank !== 14) return; // only King to empty pile
+            }
+
+            dragging.style.position = "absolute";
+            dragging.style.left = "0px";
+        }
+
+        // ----- Foundation Rules -----
+        if (targetDiv.classList.contains("foundation")) {
+            const top = getTopCard(targetDiv);
+            if (top) {
+                const topRank = parseInt(top.dataset.rank);
+                const topType = top.dataset.type;
+                if (!(movingType === topType && movingRank === topRank + 1)) {
+                    return;  // must be same suit, next rank
+                }
+            } else {
+                // first card in foundation
+                if (movingType === "major") {
+                    // Major Arcana starts with Magician (rank 1)
+                    if (movingRank !== 1) return;
+                } else {
+                    // others start with Ace (rank 1)
+                    if (movingRank !== 1) return;
+                }
+            }
+
+            dragging.style.position = "absolute";
+            dragging.style.left = "0px";
+            dragging.style.top = `${targetDiv.querySelectorAll(".card").length * 5}px`;
+        }
+
+        targetDiv.appendChild(dragging);
+
+        // re-fan piles
+        if (targetDiv.classList.contains("tableau-pile")) fanTableauPile(targetDiv);
+        if (oldPile && oldPile.classList.contains("tableau-pile")) fanTableauPile(oldPile);
+    });
+}
+
 
 
         // --- Tableau Rules ---
