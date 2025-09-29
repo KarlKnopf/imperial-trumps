@@ -1,12 +1,12 @@
-// =====================
-// Imperial Trumps JS
-// =====================
-
-// ---- Deck Setup ----
+// ----------------------
+// ---- CONFIG & DECK ----
+// ----------------------
 const backImg = "images/back/card78.png";
 let deck = [];
+const darkSuits = ["swords", "keys"];
+const lightSuits = ["cups", "pentacles"];
 
-// Build deck
+// ---- Build deck ----
 function buildDeck() {
     // Major Arcana 0-21
     for (let i = 0; i <= 21; i++) {
@@ -30,6 +30,7 @@ function buildDeck() {
     }
 }
 
+// Shuffle utility
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -38,19 +39,19 @@ function shuffle(array) {
     return array;
 }
 
-// Build + shuffle
-buildDeck();
-deck = shuffle(deck);
-
-// ---- DOM references ----
+// ----------------------
+// ---- DOM ELEMENTS ----
 const stockDiv = document.getElementById("stock");
 const tableauDiv = document.getElementById("tableau");
 const foundationsDiv = document.getElementById("foundations");
 
-// ---- Helpers ----
-const darkSuits = ["keys", "swords"];
-const lightSuits = ["cups", "pentacles"];
+// ----------------------
+// ---- GAME STATE ----
+let stockStack = [];
+const tableauPiles = [];
 
+// ----------------------
+// ---- HELPER FUNCTIONS ----
 function getTopCard(pileDiv) {
     const cards = pileDiv.querySelectorAll(".card");
     return cards[cards.length - 1] || null;
@@ -61,108 +62,136 @@ function isOppositeColor(a, b) {
            (lightSuits.includes(a) && darkSuits.includes(b));
 }
 
-// ---- Tableau + Stock data ----
-const tableauPiles = [];
-let stockStack = [];
+// Check Imperial Trumps foundation rule
+function canPlayToFoundation(card, foundationDiv) {
+    const top = getTopCard(foundationDiv);
 
-// Deal to tableau
-function dealTableau() {
-    // ---- Tableau ----
-for (let i = 0; i < 7; i++) {
-    const pile = document.createElement("div");
-    pile.classList.add("tableau-pile");
-    pile.dataset.index = i;
-    tableauDiv.appendChild(pile);
+    if (card.type === "major") {
+        return !top || (card.rank === parseInt(top.dataset.rank) + 1);
+    } else {
+        // minor arcana requires major arcana of same rank first
+        const requiredMajorRank = card.rank;
+        const majorFoundation = document.querySelector('.foundation[data-suit="major"]');
+        const topMajor = getTopCard(majorFoundation);
+        if (!topMajor || parseInt(topMajor.dataset.rank) < requiredMajorRank) return false;
 
-    // store reference
-    tableauPiles.push(pile);
-
-    // enable dropping
-    enableDrop(pile);
-}
-
-    // Deal cards
-    for (let i = 0; i < 7; i++) {
-        for (let j = 0; j <= i; j++) {
-            const card = deck.pop();
-            const img = document.createElement("img");
-            img.src = (j === i) ? card.img : backImg;  // top card face-up
-            img.dataset.front = card.img;
-            img.dataset.type = card.type;
-            img.dataset.rank = card.rank;
-            img.classList.add("card");
-            img.setAttribute("draggable", "true");
-            addDragBehavior(img);
-            tableauPiles[i].appendChild(img);
-        }
-        fanTableauPile(tableauPiles[i]);
+        return !top || (card.type === top.dataset.type && parseInt(top.dataset.rank) + 1 === card.rank);
     }
-
-    stockStack = [...deck];
-    renderStock();
 }
 
-// ---- Fan Tableau Pile ----
-function fanTableauPile(pile) {
-    const cards = pile.querySelectorAll(".card");
-    const offset = 30; // pixels between cards
-    cards.forEach((card, index) => {
-        card.style.position = "absolute";
-        card.style.top = `${index * offset}px`;
-        card.style.left = "0px";
-        card.style.zIndex = index; // ensure top card is on top
+// Drag behavior
+function addDragBehavior(card) {
+    card.addEventListener("dragstart", (e) => {
+        card.classList.add("dragging");
+        e.dataTransfer.setData("text/plain", JSON.stringify({
+            type: card.dataset.type,
+            rank: card.dataset.rank,
+            src: card.src
+        }));
+    });
+    card.addEventListener("dragend", () => {
+        card.classList.remove("dragging");
+    });
+}
+
+// Enable drop zones
+function enableDrop(targetDiv) {
+    targetDiv.addEventListener("dragover", (e) => e.preventDefault());
+
+    targetDiv.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const dragging = document.querySelector(".dragging");
+        if (!dragging) return;
+
+        const oldPile = dragging.parentElement;
+        const movingType = dragging.dataset.type;
+        const movingRank = parseInt(dragging.dataset.rank);
+
+        if (targetDiv.classList.contains("tableau-pile")) {
+            const top = getTopCard(targetDiv);
+            if (top) {
+                const topRank = parseInt(top.dataset.rank);
+                const topType = top.dataset.type;
+                if (!(isOppositeColor(movingType, topType) && movingRank === topRank - 1)) {
+                    return; // illegal move
+                }
+            } else {
+                if (movingRank !== 14) return; // only King on empty tableau
+            }
+        }
+
+        if (targetDiv.classList.contains("foundation")) {
+            if (!canPlayToFoundation(dragging, targetDiv)) return;
+        }
+
+        targetDiv.appendChild(dragging);
+
+        // Remove from stock if needed
+        stockStack = stockStack.filter(c => !(c.type === movingType && c.rank == movingRank));
+    });
+}
+
+// Render stock
+function renderStock() {
+    stockDiv.innerHTML = "";
+    if (stockStack.length === 0) return;
+
+    const topCard = stockStack[stockStack.length - 1];
+    const img = document.createElement("img");
+    img.src = backImg;
+    img.dataset.front = topCard.img;
+    img.dataset.type = topCard.type;
+    img.dataset.rank = topCard.rank;
+    img.classList.add("card");
+    img.setAttribute("draggable", "true");
+
+    img.addEventListener("click", () => {
+        img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
     });
 
-    // Flip bottom card face-up if it's not already
-    if (cards.length > 0) {
-        const bottomCard = cards[cards.length - 1];
-        if (bottomCard.src.includes(backImg)) {
-            bottomCard.src = bottomCard.dataset.front;
-        }
-    }
+    addDragBehavior(img);
+    stockDiv.appendChild(img);
 }
 
-// ---- Deal Tableau ----
+// Deal tableau
 function dealTableau() {
-    tableauPiles.forEach((pile, i) => {
+    let index = 0;
+    for (let i = 0; i < 7; i++) {
+        const pile = document.createElement("div");
+        pile.classList.add("tableau-pile");
+        tableauDiv.appendChild(pile);
+        tableauPiles.push(pile);
+        enableDrop(pile);
+
         for (let j = 0; j <= i; j++) {
-            const card = stockStack.pop();
+            const card = stockStack[index++];
             const img = document.createElement("img");
-            img.src = backImg; // start face-down
+            img.src = backImg;
             img.dataset.front = card.img;
             img.dataset.type = card.type;
             img.dataset.rank = card.rank;
             img.classList.add("card");
             img.setAttribute("draggable", "true");
+
+            if (j === i) img.src = card.img; // top card face up
+
             addDragBehavior(img);
             pile.appendChild(img);
         }
-        fanTableauPile(pile);
-    });
-}
-
-// ---- Enable Drop Zones ----
-function canPlayToFoundation(card, foundationDiv) {
-    const top = getTopCard(foundationDiv);
-    
-    if (card.type === "major") {
-        // always playable on empty foundation for that suit
-        return !top || (card.rank === top.dataset.rank + 1);
-    } else {
-        // minor arcana must wait for major arcana
-        const requiredMajorRank = card.rank; // e.g., Ace = 1, King = 13
-        const majorFoundation = document.querySelector('.foundation[data-suit="major"]');
-        const topMajor = getTopCard(majorFoundation);
-        if (!topMajor || parseInt(topMajor.dataset.rank) < requiredMajorRank) {
-            return false;
-        }
-        return !top || (card.type === top.dataset.type && card.rank === parseInt(top.dataset.rank) + 1);
     }
+    stockStack = stockStack.slice(index);
 }
 
+// ----------------------
+// ---- INIT GAME ----
+buildDeck();
+deck = shuffle(deck);
+stockStack = [...deck];
 
-// ---- Initialize Tableau and Foundations ----
-tableauPiles.forEach(p => enableDrop(p));
+dealTableau();
+
+// Foundations
+const foundationSuits = ["keys", "cups", "swords", "pentacles", "major"];
 foundationSuits.forEach(suit => {
     const f = document.createElement("div");
     f.classList.add("foundation");
@@ -172,6 +201,4 @@ foundationSuits.forEach(suit => {
     enableDrop(f);
 });
 
-// ---- Start Game ----
-dealTableau();
 renderStock();
