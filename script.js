@@ -125,6 +125,28 @@ for (let i = 0; i < 7; i++) {
 
     tableauDiv.appendChild(pile);
 }
+function dealTableau() {
+    for (let i = 0; i < 7; i++) { // 7 piles
+        const pile = tableauDiv.children[i]; // get pile div
+        for (let j = 0; j <= i; j++) {      // deal i+1 cards
+            const card = stockStack.pop();
+            const img = document.createElement("img");
+            
+            img.dataset.front = card.img;
+            img.dataset.type = card.type;
+            img.dataset.rank = card.rank;
+            img.classList.add("card");
+            img.setAttribute("draggable", "true");
+            addDragBehavior(img);
+
+            // Only last card is face-up
+            img.src = (j === i) ? card.img : backImg;
+
+            pile.appendChild(img);
+        }
+    }
+}
+
 
 // ----------------------
 // CREATE FOUNDATIONS (5 suits)
@@ -181,7 +203,6 @@ function dealTableau() {
 // After creating the piles, call:
 dealTableau();
 renderStock(); // still show top of stock
-
 
 // ----------------------
 // START GAME
