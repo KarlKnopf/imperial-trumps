@@ -1,3 +1,23 @@
+function dealTableau() {
+    for (let i = 0; i < 7; i++) { // 7 piles
+        const pile = tableauDiv.children[i];
+        for (let j = 0; j <= i; j++) { // deal increasing number per pile
+            const card = stockStack.pop();
+            const img = document.createElement("img");
+            img.src = backImg; 
+            img.dataset.front = card.img;
+            img.dataset.type = card.type;
+            img.dataset.rank = card.rank;
+            img.classList.add("card");
+            img.style.top = j * 30 + "px"; // fanned spacing
+            img.setAttribute("draggable", "true");
+            addDragBehavior(img);
+            pile.appendChild(img);
+        }
+    }
+}
+
+
 // ---- Make card draggable ----
 function addDragBehavior(card) {
     card.setAttribute("draggable", "true");
