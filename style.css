@@ -26,7 +26,21 @@ body {
     transform: scale(1.1);
 }
 
+#stock {
+    position: relative;
+    width: 120px;
+    height: 160px;
+    margin: 0 auto;
+}
+#stock .card {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+
 .tableau-container, .foundations-container {
     min-height: 160px;
 }
+
 
