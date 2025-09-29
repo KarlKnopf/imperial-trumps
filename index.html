@@ -2,62 +2,31 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Imperial Trumps</title>
-<style>
-    body { font-family: sans-serif; }
-    #stock, #tableau, #foundations {
-        margin: 10px;
-        padding: 10px;
-        border: 1px dashed gray;
-        min-height: 150px;
-    }
-    .tableau-pile, .foundation {
-        width: 120px;
-        height: 200px;
-        border: 1px dashed black;
-        display: inline-block;
-        margin-right: 10px;
-        vertical-align: top;
-        position: relative;
-    }
-    .card {
-        width: 100px;
-        height: 150px;
-        cursor: pointer;
-        user-select: none;
-    }
-    <div id="game-area">
-    <div id="stock-container">
-        <h3>Stock</h3>
-        <div id="stock"></div>
-    </div>
-
-    <div id="tableau-container">
-        <h3>Tableau</h3>
-        <!-- Piles will be created by JS -->
-    </div>
-
-    <div id="foundations-container">
-        <h3>Foundations</h3>
-        <!-- Foundations will be created by JS -->
-    </div>
-</div>
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <h1>Imperial Trumps</h1>
 
-<h2>Stock</h2>
-<div id="stock"></div>
+<div id="game-board">
+    <div id="stock-container">
+        <h2>Stock</h2>
+        <div id="stock"></div>
+    </div>
 
-<h2>Tableau</h2>
-<div id="tableau"></div>
+    <div id="tableau-container">
+        <h2>Tableau</h2>
+        <div id="tableau"></div>
+    </div>
 
-<h2>Foundations</h2>
-<div id="foundations"></div>
+    <div id="foundations-container">
+        <h2>Foundations</h2>
+        <div id="foundations"></div>
+    </div>
+</div>
 
 <script src="script.js"></script>
 </body>
 </html>
+
