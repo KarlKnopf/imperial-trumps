@@ -204,6 +204,20 @@ function dealTableau() {
 dealTableau();
 renderStock(); // still show top of stock
 
+pile.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const cardData = JSON.parse(e.dataTransfer.getData("text/plain"));
+    
+    // Find the original element being dragged
+    const draggedCard = document.querySelector(`img[data-type="${cardData.type}"][data-rank="${cardData.rank}"]`);
+    
+    if (draggedCard) {
+        pile.appendChild(draggedCard); // physically move the card
+    }
+
+    renderStock(); // refresh stock if necessary
+});
+
 // ----------------------
 // START GAME
 // ----------------------
