@@ -118,7 +118,7 @@ for (let pileIndex = 0; pileIndex < 7; pileIndex++) {
         card.classList.add("card");
         card.setAttribute("draggable", "true");
         card.style.position = "absolute";
-        card.style.top = `${i * 30}px`;
+        card.style.top = `${i * 60}px`;
         card.style.left = "0px";
         card.style.width = "100px";
         card.style.height = "150px";
