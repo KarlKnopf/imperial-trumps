@@ -14,7 +14,8 @@ function addDragBehavior(card) {
 // CREATE TABLEAU (7 piles)
 // ----------------------
 for (let i = 0; i < 7; i++) {
-    const pile = document.createElement("div");
+    const offset = pile.children.length * 30; // vertical spacing
+droppedCard.style.top = offset + "px";
     pile.classList.add("tableau-pile");
     pile.innerHTML = `<strong>Pile ${i + 1}</strong>`;
     tableauDiv.appendChild(pile);
