@@ -120,22 +120,36 @@ for (let i = 0; i < 7; i++) {
 // ----------------------
 // DEAL TABLEAU
 // ----------------------
-function dealTableau() {
-    for (let i = 0; i < 7; i++) {
-        const pile = tableauDiv.children[i];
-        for (let j = 0; j <= i; j++) {
-            const card = stockStack.pop();
-            const img = document.createElement("img");
-            img.src = backImg; // face-down
-            img.dataset.front = card.img;
-            img.dataset.type = card.type;
-            img.dataset.rank = card.rank;
-            img.classList.add("card");
-            addDragBehavior(img);
-            pile.appendChild(img);
+// Deal tableau: 7 piles
+let deckIndex = 0; // keep track of where we are in the deck
+for (let i = 0; i < 7; i++) {
+    const pile = document.createElement("div");
+    pile.classList.add("tableau-pile");
+    tableauDiv.appendChild(pile);
+
+    for (let j = 0; j <= i; j++) {
+        const card = deck[deckIndex];
+        const img = document.createElement("img");
+        img.classList.add("card");
+        img.dataset.type = card.type;
+        img.dataset.rank = card.rank;
+
+        // If it's the bottom card in this pile, show front; otherwise, back
+        if (j === i) {
+            img.src = card.img; // face up
+        } else {
+            img.src = backImg; // face down
         }
+
+        // Make cards draggable
+        img.setAttribute("draggable", "true");
+        addDragBehavior(img);
+
+        pile.appendChild(img);
+        deckIndex++;
     }
 }
+
 
 // ----------------------
 // CREATE FOUNDATIONS (5 suits)
