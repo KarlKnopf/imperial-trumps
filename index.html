@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Imperial Trumps Prototype</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Imperial Trumps</title>
+  <style>
+    body { font-family: sans-serif; background:#2b2b2b; color:#fff; }
+    #game { display: flex; flex-direction: column; gap: 20px; padding:20px; }
+    #stock img { width:100px; height:auto; border:1px solid #fff; }
+    #tableau, #foundations { display:flex; gap:15px; }
+    .tableau-pile, .foundation {
+      width:100px; height:150px; border:2px dashed #999;
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(255,255,255,0.05);
+    }
+    .card { width:100%; height:auto; cursor:pointer; }
+  </style>
 </head>
 <body>
-    <h1>Imperial Trumps Prototype</h1>
+  <h1>Imperial Trumps Test</h1>
+  <div id="game">
+    <div id="stock"></div>
+    <div id="tableau"></div>
+    <div id="foundations"></div>
+  </div>
 
-    <div id="game-board">
-        <div id="stock-area">
-            <h2>Stock</h2>
-            <div id="stock" class="card-container"></div>
-        </div>
-
-        <div id="tableau-area">
-            <h2>Tableau</h2>
-            <div id="tableau" class="tableau-container"></div>
-        </div>
-
-        <div id="foundations-area">
-            <h2>Foundations</h2>
-            <div id="foundations" class="foundations-container"></div>
-        </div>
-    </div>
-
-    <script src="main.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
+
