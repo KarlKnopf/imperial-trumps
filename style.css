@@ -23,19 +23,30 @@ body {
 }
 
 .tableau-pile {
-    position: relative;
+    display: inline-block;
+    vertical-align: top;
     width: 100px;
     min-height: 400px;
-    border: 2px dashed #aaa;
-    padding-top: 20px;
+    margin: 0 10px;
+    border: 2px dashed #555;
+    padding-top: 5px;
+    position: relative;
 }
 
-/* Stack cards in a vertical fan */
-.tableau-pile img.card {
+.tableau-pile .card {
+    width: 100px;
+    height: 140px;
     position: absolute;
-    cursor: grab;
-    user-select: none;
+    top: 0; /* base position */
+    left: 0;
+    transition: top 0.2s;
 }
+
+/* Apply dynamic fanning using nth-child */
+.tableau-pile .card:nth-child(n) {
+    top: calc(20px * (var(--card-index)));
+}
+
 
 /* Foundation */
 #foundations {
@@ -54,4 +65,5 @@ body {
     justify-content: center;
     font-weight: bold;
 }
+
 
