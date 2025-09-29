@@ -1,7 +1,12 @@
+// ----------------------
+// CONFIG
+// ----------------------
 const backImg = "images/back/card78.png";
 let deck = [];
 
-// ---- Build deck ----
+// ----------------------
+// BUILD THE DECK
+// ----------------------
 function buildDeck() {
     // Major Arcana 0-21
     for (let i = 0; i <= 21; i++) {
@@ -25,6 +30,9 @@ function buildDeck() {
     }
 }
 
+// ----------------------
+// SHUFFLE HELPER
+// ----------------------
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -33,14 +41,70 @@ function shuffle(array) {
     return array;
 }
 
-// ---- Initialize Game ----
+// ----------------------
+// INITIALIZE GAME
+// ----------------------
 buildDeck();
 deck = shuffle(deck);
 
-// ✅ Only declared ONCE
+// ✅ Only declare these ONCE
 const stockDiv = document.getElementById("stock");
 const tableauDiv = document.getElementById("tableau");
 const foundationsDiv = document.getElementById("foundations");
 
 // ---- Stock stack array ----
 let stockStack = [...deck]; // copy of shuffled deck
+
+// ----------------------
+// RENDER STOCK (TOP CARD ONLY)
+// ----------------------
+function renderStock() {
+    stockDiv.innerHTML = ""; // clear previous
+    if (stockStack.length === 0) return; // empty stock
+
+    const topCard = stockStack[stockStack.length - 1];
+    const img = document.createElement("img");
+    img.src = backImg;
+    img.dataset.front = topCard.img;
+    img.dataset.type = topCard.type;
+    img.dataset.rank = topCard.rank;
+    img.classList.add("card");
+
+    img.addEventListener("click", () => {
+        // flip the card
+        img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
+
+        // for now just remove from stock to simulate drawing
+        stockStack.pop();
+        renderStock(); // refresh top card
+    });
+
+    stockDiv.appendChild(img);
+}
+
+// ----------------------
+// CREATE TABLEAU (7 piles)
+// ----------------------
+for (let i = 0; i < 7; i++) {
+    const pile = document.createElement("div");
+    pile.classList.add("tableau-pile");
+    pile.innerHTML = `<strong>Pile ${i + 1}</strong>`;
+    tableauDiv.appendChild(pile);
+}
+
+// ----------------------
+// CREATE FOUNDATIONS (5 suits)
+// ----------------------
+const foundationSuits = ["keys", "cups", "swords", "pentacles", "major"];
+foundationSuits.forEach(suit => {
+    const f = document.createElement("div");
+    f.classList.add("foundation");
+    f.dataset.suit = suit;
+    f.innerHTML = `<strong>${suit.toUpperCase()}</strong>`;
+    foundationsDiv.appendChild(f);
+});
+
+// ----------------------
+// START GAME
+// ----------------------
+renderStock();
