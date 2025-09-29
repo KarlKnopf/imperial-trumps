@@ -16,15 +16,14 @@
 
 /* Each tableau pile */
 .tableau-pile {
-    width: 120px;  /* adjust to match card width */
-    min-height: 180px; /* enough height for fanned cards */
+    width: 120px;
     border: 2px dashed #888;
     border-radius: 6px;
     padding: 5px;
-    position: relative; /* so fanned cards can stack */
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: -120px; /* negative gap to create overlap */
 }
 
 /* Foundations container: horizontal row under tableau */
@@ -50,10 +49,7 @@
 .card {
     width: 100px;
     height: 150px;
-    margin-top: -100px; /* fanned overlap */
     border-radius: 4px;
     cursor: grab;
-    position: absolute;
-    top: 0;
-    left: 0;
+    /* remove position: absolute */
 }
