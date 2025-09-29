@@ -65,15 +65,14 @@ body {
     margin-left: 40px;
 }
 
-.foundation {
-    width: 100px;
-    height: 140px;
-    border: 2px dashed #aaa;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
+.foundation img.card {
+    width: 100px !important;
+    height: 140px !important;
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
 }
+
 
 
 
