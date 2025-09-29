@@ -1,24 +1,104 @@
+/* ----------------------
+   GENERAL
+---------------------- */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #2b2b2b;
+    color: #fff;
+    margin: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+/* ----------------------
+   GAME CONTAINERS
+---------------------- */
+#game-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
 #stock, #tableau, #foundations {
     display: flex;
+    gap: 10px;
     margin: 10px;
 }
 
-.tableau-pile, .foundation {
-    position: relative;
+/* ----------------------
+   STOCK
+---------------------- */
+#stock {
+    flex-direction: column;
     width: 120px;
-    height: 300px;
-    border: 2px dashed #888;
-    margin: 5px;
-    text-align: center;
-    display: inline-block;
 }
 
+/* ----------------------
+   TABLEAU
+---------------------- */
+#tableau {
+    display: flex;
+    gap: 30px; /* space between piles */
+}
+
+.tableau-pile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: -100px; /* vertical overlap for fan effect */
+    min-height: 400px;
+    width: 120px;
+    border: 2px dashed #888;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: rgba(50, 50, 50, 0.5);
+}
+
+/* ----------------------
+   FOUNDATIONS
+---------------------- */
+#foundations {
+    display: flex;
+    gap: 10px;
+}
+
+.foundation {
+    width: 120px;
+    height: 170px;
+    border: 2px dashed #aaa;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
+    background-color: rgba(70, 70, 70, 0.5);
+}
+
+/* ----------------------
+   CARDS
+---------------------- */
 .card {
     width: 100px;
     height: 150px;
-    position: absolute;
     cursor: pointer;
+    border-radius: 5px;
+    user-select: none;
+    box-shadow: 0px 3px 6px rgba(0,0,0,0.5);
+    transition: transform 0.2s;
 }
 
+.card:hover {
+    transform: scale(1.05);
+}
 
-
+/* ----------------------
+   PILE LABELS
+---------------------- */
+.tableau-pile strong,
+.foundation strong {
+    color: #fff;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
