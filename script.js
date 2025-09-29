@@ -40,7 +40,7 @@ function shuffle(array) {
 
 // Build + shuffle
 buildDeck();
-// deck = shuffle(deck);
+deck = shuffle(deck);
 
 // ---- DOM references ----
 const stockDiv = document.getElementById("stock");
@@ -101,6 +101,28 @@ for (let i = 0; i < 7; i++) {
     stockStack = [...deck];
     renderStock();
 }
+// --- DEBUG SETUP ---
+tableauPiles.forEach(p => { p.innerHTML = ""; }); // clear all piles
+
+// Put a King in pile 1
+const k = document.createElement("img");
+k.src = "images/keys/card35.png";     // King of Keys
+k.dataset.type = "keys";
+k.dataset.rank = 14;                  // King rank
+k.classList.add("card");
+k.draggable = true;
+k.addEventListener("dragstart", dragStart);
+tableauPiles[0].appendChild(k);
+
+// Put a Queen of Cups in pile 2
+const q = document.createElement("img");
+q.src = "images/cups/card48.png";     // Queen of Cups
+q.dataset.type = "cups";
+q.dataset.rank = 13;                  // Queen rank
+q.classList.add("card");
+q.draggable = true;
+q.addEventListener("dragstart", dragStart);
+tableauPiles[1].appendChild(q);
 
 // ---- Fan piles visually ----
 function fanTableauPile(pile) {
