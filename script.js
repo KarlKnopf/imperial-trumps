@@ -1,16 +1,31 @@
 const backImg = "images/back/card78.png";
 let deck = [];
 
-// ---- Build deck ----
+// --- Build Deck ---
 function buildDeck() {
-    for (let i = 0; i <= 21; i++) deck.push({ type: "major", rank: i + 1, img: `images/major/card${i}.png` });
-    for (let i = 22; i <= 35; i++) deck.push({ type: "keys", rank: i - 21, img: `images/keys/card${i}.png` });
-    for (let i = 36; i <= 49; i++) deck.push({ type: "cups", rank: i - 35, img: `images/cups/card${i}.png` });
-    for (let i = 50; i <= 63; i++) deck.push({ type: "swords", rank: i - 49, img: `images/swords/card${i}.png` });
-    for (let i = 64; i <= 77; i++) deck.push({ type: "pentacles", rank: i - 63, img: `images/pentacles/card${i}.png` });
+    // Major Arcana 0-21
+    for (let i = 0; i <= 21; i++) {
+        deck.push({ type: "major", rank: i + 1, img: `images/major/card${i}.png` });
+    }
+    // Keys 22-35
+    for (let i = 22; i <= 35; i++) {
+        deck.push({ type: "keys", rank: i - 21, img: `images/keys/card${i}.png` });
+    }
+    // Cups 36-49
+    for (let i = 36; i <= 49; i++) {
+        deck.push({ type: "cups", rank: i - 35, img: `images/cups/card${i}.png` });
+    }
+    // Swords 50-63
+    for (let i = 50; i <= 63; i++) {
+        deck.push({ type: "swords", rank: i - 49, img: `images/swords/card${i}.png` });
+    }
+    // Pentacles 64-77
+    for (let i = 64; i <= 77; i++) {
+        deck.push({ type: "pentacles", rank: i - 63, img: `images/pentacles/card${i}.png` });
+    }
 }
 
-// ---- Shuffle ----
+// --- Shuffle ---
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -19,18 +34,7 @@ function shuffle(array) {
     return array;
 }
 
-// ---- Drag behavior ----
-function addDragBehavior(card) {
-    card.addEventListener("dragstart", (e) => {
-        e.dataTransfer.setData("text/plain", JSON.stringify({
-            type: card.dataset.type,
-            rank: card.dataset.rank,
-            src: card.dataset.front // always use front image
-        }));
-    });
-}
-
-// ---- Initialize game ----
+// --- Initialize ---
 buildDeck();
 deck = shuffle(deck);
 
@@ -38,34 +42,9 @@ const stockDiv = document.getElementById("stock");
 const tableauDiv = document.getElementById("tableau");
 const foundationsDiv = document.getElementById("foundations");
 
-// ---- Deal tableau ----
-let deckIndex = 0;
-for (let i = 0; i < 7; i++) {
-    const pile = document.createElement("div");
-    pile.classList.add("tableau-pile");
-    tableauDiv.appendChild(pile);
+let stockStack = [...deck];
 
-    for (let j = 0; j <= i; j++) {
-        const card = deck[deckIndex];
-        const img = document.createElement("img");
-        img.classList.add("card");
-        img.dataset.type = card.type;
-        img.dataset.rank = card.rank;
-        img.dataset.front = card.img;
-        img.setAttribute("draggable", "true");
-
-        // Only the bottom card is face-up
-        img.src = (j === i) ? card.img : backImg;
-
-        addDragBehavior(img);
-        pile.appendChild(img);
-        deckIndex++;
-    }
-}
-
-// ---- Stock ----
-let stockStack = deck.slice(deckIndex);
-
+// --- Render Stock ---
 function renderStock() {
     stockDiv.innerHTML = "";
     if (stockStack.length === 0) return;
@@ -77,26 +56,55 @@ function renderStock() {
     img.dataset.type = topCard.type;
     img.dataset.rank = topCard.rank;
     img.classList.add("card");
-    img.setAttribute("draggable", "true");
 
     img.addEventListener("click", () => {
         img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
-        stockStack.pop();
-        renderStock();
     });
 
-    addDragBehavior(img);
     stockDiv.appendChild(img);
 }
 
-// ---- Create foundations ----
-["keys", "cups", "swords", "pentacles", "major"].forEach(suit => {
+// --- Tableau ---
+const tableauPiles = [];
+for (let i = 0; i < 7; i++) {
+    const pile = document.createElement("div");
+    pile.classList.add("tableau-pile");
+    tableauDiv.appendChild(pile);
+    tableauPiles.push(pile);
+}
+
+// Deal tableau cards
+let dealIndex = 0;
+for (let col = 0; col < 7; col++) {
+    for (let row = 0; row <= col; row++) {
+        const cardData = stockStack[dealIndex];
+        const img = document.createElement("img");
+        img.classList.add("card");
+        img.dataset.type = cardData.type;
+        img.dataset.rank = cardData.rank;
+
+        // Only bottom card face-up
+        img.src = row === col ? cardData.img : backImg;
+
+        img.style.top = `${row * 30}px`;
+        img.style.zIndex = row;
+
+        pile = tableauPiles[col];
+        pile.appendChild(img);
+        dealIndex++;
+    }
+}
+
+// Remove dealt cards from stock
+stockStack = stockStack.slice(dealIndex);
+renderStock();
+
+// --- Foundations ---
+const foundationSuits = ["keys", "cups", "swords", "pentacles", "major"];
+foundationSuits.forEach(suit => {
     const f = document.createElement("div");
     f.classList.add("foundation");
     f.dataset.suit = suit;
     f.innerHTML = `<strong>${suit.toUpperCase()}</strong>`;
     foundationsDiv.appendChild(f);
 });
-
-// ---- Initial render ----
-renderStock();
