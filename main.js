@@ -41,44 +41,32 @@ const stockDiv = document.getElementById("stock");
 const tableauDiv = document.getElementById("tableau");
 const foundationsDiv = document.getElementById("foundations");
 
-// ---- Stock stack array ----
-let stockStack = [...deck]; // copy of shuffled deck
+// ---- Stock stack ----
+let stockStack = [...deck];
 
-const stockDiv = document.getElementById("stock");
-
-// Function to show top card
+// Show only the top card of stock
 function renderStock() {
     stockDiv.innerHTML = ""; // clear previous
-    if (stockStack.length === 0) return; // empty stock
+    if (stockStack.length === 0) return; // nothing left
 
     const topCard = stockStack[stockStack.length - 1];
+
     const img = document.createElement("img");
-    img.src = backImg; 
+    img.src = backImg;
     img.dataset.front = topCard.img;
     img.dataset.type = topCard.type;
     img.dataset.rank = topCard.rank;
     img.classList.add("card");
 
     img.addEventListener("click", () => {
-        // flip the card
         img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
-
-        // move to tableau or foundation logic can be added here
-        // for now, just remove from stock as "drawn"
-        stockStack.pop(); 
-        renderStock(); // refresh top card
+        // remove top card from stock after flipping
+        stockStack.pop();
+        renderStock(); // refresh to show next card
     });
 
     stockDiv.appendChild(img);
 }
-
-    // Click to flip stock card
-    img.addEventListener("click", () => {
-        img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
-    });
-
-    stockDiv.appendChild(img);
-});
 
 // Create tableau (7 piles)
 for (let i = 0; i < 7; i++) {
@@ -87,7 +75,7 @@ for (let i = 0; i < 7; i++) {
     tableauDiv.appendChild(pile);
 }
 
-// Create foundations (keys, cups, swords, pentacles, major)
+// Create foundations
 const foundationSuits = ["keys", "cups", "swords", "pentacles", "major"];
 foundationSuits.forEach(suit => {
     const f = document.createElement("div");
@@ -97,6 +85,5 @@ foundationSuits.forEach(suit => {
     foundationsDiv.appendChild(f);
 });
 
-// Initial render
+// ---- Initial render ----
 renderStock();
-
