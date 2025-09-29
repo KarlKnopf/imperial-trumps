@@ -1,78 +1,42 @@
 body {
     font-family: sans-serif;
-    background-color: #2e2e2e;
-    color: white;
-    margin: 20px;
-}
-
-#game-container {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-#foundations {
-    display: flex;
-    gap: 15px;
+#stock-container {
     margin-bottom: 20px;
 }
 
-.foundation {
-    position: relative;
-    width: 100px;      /* or whatever fits your cards */
-    height: 140px;
-    border: 1px dashed #555;
+#stock {
+    width: 100px;
+    min-height: 140px;
+    border: 2px dashed #aaa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-
-#tableau {
+#tableau-container {
     display: flex;
-    gap: 20px;
-    margin-bottom: 20px;
-    align-items: flex-start;
+    justify-content: space-between;
+    width: 1000px; /* enough space for 7 piles */
+    margin-bottom: 30px;
 }
 
 .tableau-pile {
-    width: 100px;
-    height: 300px;
+    width: 120px;
+    min-height: 250px;
     border: 2px dashed #aaa;
     position: relative;
 }
 
-.card {
-    width: 100px;
-    height: 140px;
-    position: absolute;
-    cursor: pointer;
-    user-select: none;
-}
-
-.tableau-pile {
-    position: relative;           /* so cards stack within */
-    width: 100px;
-    height: 300px;
-    border: 1px dashed #777;
-    display: inline-block;
-    vertical-align: top;
-    margin-right: 10px;
-}
-
 .foundation {
-    position: relative;           /* required for absolute cards */
     width: 100px;
-    height: 140px;
-    border: 1px dashed #555;
+    min-height: 140px;
+    border: 2px dashed #aaa;
+    margin: 5px;
     display: inline-block;
-    margin-right: 10px;
+    text-align: center;
 }
-
-.card {
-    width: 100px;
-    height: 140px;
-    cursor: grab;
-    user-select: none;
-}
-
-
-
-
