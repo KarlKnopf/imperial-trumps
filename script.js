@@ -207,8 +207,21 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         }
 
-        // append to foundation and position it inside foundation
-        targetDiv.appendChild(dragging);
+        // inside enableDrop -> when dropping on a foundation
+targetDiv.appendChild(dragging);
+
+// reset any old offsets from tableau
+dragging.style.left = "0px";
+dragging.style.top  = "0px";
+dragging.style.position = "absolute";
+
+// now stack it neatly in foundation
+const cards = targetDiv.querySelectorAll(".card");
+const idx = cards.length - 1;
+dragging.style.top  = (idx * 6) + "px";     // small vertical stack
+dragging.style.left = "0px";
+dragging.style.zIndex = 100 + idx;
+
 
         // ensure foundation is relatively positioned (CSS should set this; set again for safety)
         targetDiv.style.position = targetDiv.style.position || "relative";
