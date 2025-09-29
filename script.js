@@ -76,6 +76,15 @@ function createTableau() {
     }
 }
 
+const tableauDiv = document.getElementById("tableau");
+for (let i = 0; i < 7; i++) {
+    const pile = document.createElement("div");
+    pile.classList.add("tableau-pile");
+    tableauDiv.appendChild(pile);
+    tableauPiles.push(pile); // important!
+}
+
+
 function dealTableau() {
     tableauPiles.forEach((pile, pileIndex) => {
         for (let i = 0; i <= pileIndex; i++) { // standard Klondike deal: pile 0 gets 1 card, pile 1 gets 2, etc.
