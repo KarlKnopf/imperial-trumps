@@ -148,6 +148,7 @@ function isOppositeColor(a, b) {
 // ============================
 //       DROP LOGIC
 // ============================
+// ---- Enable drop zones ----
 function enableDrop(targetDiv) {
     targetDiv.addEventListener("dragover", (e) => e.preventDefault());
 
@@ -160,53 +161,53 @@ function enableDrop(targetDiv) {
         const movingType = dragging.dataset.type;
         const movingRank = parseInt(dragging.dataset.rank);
 
-        // ----- Tableau rules -----
+        // --- Tableau Rules ---
         if (targetDiv.classList.contains("tableau-pile")) {
             const top = getTopCard(targetDiv);
             if (top) {
                 const topRank = parseInt(top.dataset.rank);
                 const topType = top.dataset.type;
                 if (!(isOppositeColor(movingType, topType) && movingRank === topRank - 1)) {
-                    return; // invalid
+                    return; // illegal move
                 }
             } else {
-                if (movingRank !== 14) return; // King only to empty pile
+                if (movingRank !== 14) return; // only King can go to empty pile
             }
-
-            dragging.style.position = "absolute";
-            dragging.style.left = "0px";
         }
 
-        // ----- Foundation rules -----
+        // --- Foundation Rules ---
+        if (targetDiv.classList.contains("foundation")) {
+            const top = getTopCard(targetDiv);
+            if (top) {
+                const topRank = parseInt(top.dataset.rank);
+                const topType = top.dataset.type;
+                if (!(movingType === topType && movingRank === topRank + 1)) {
+                    return; // illegal move
+                }
+            } else {
+                if (movingRank !== 1) return; // must start with Magician (rank 1)
+            }
+        }
+
+        // ---- Move card ----
+        if (targetDiv.classList.contains("foundation")) {
+            // insert new card at the top of foundation stack
+            targetDiv.insertBefore(dragging, targetDiv.firstChild);
         } else {
-    if (targetDiv.dataset.suit === "major") {
-        // Major Arcana starts with Magician (rank 1)
-        if (movingRank !== 1) return;
-    } else {
-        // Other suits start with Ace
-        if (movingRank !== 1) return;
-    }
-}
-
-
-            dragging.style.position = "absolute";
-            dragging.style.left = "0px";
-            dragging.style.top = `${targetDiv.querySelectorAll(".card").length * 5}px`;
+            // normal piles just append to the bottom
+            targetDiv.appendChild(dragging);
         }
 
-        // Move card
-if (targetDiv.classList.contains("foundation")) {
-    targetDiv.insertBefore(dragging, targetDiv.firstChild);
-} else {
-    targetDiv.appendChild(dragging);
-}
-
-
-        // re-fan
-        if (targetDiv.classList.contains("tableau-pile")) fanTableauPile(targetDiv);
-        if (oldPile && oldPile.classList.contains("tableau-pile")) fanTableauPile(oldPile);
+        // ---- Re-fan tableau piles if affected ----
+        if (targetDiv.classList.contains("tableau-pile")) {
+            fanTableauPile(targetDiv);
+        }
+        if (oldPile && oldPile.classList.contains("tableau-pile")) {
+            fanTableauPile(oldPile);
+        }
     });
 }
+
 
 // ============================
 //       FOUNDATIONS
