@@ -24,17 +24,25 @@ body {
   cursor: pointer;
 }
 
-/* Tableau piles */
-.tableau-pile {
-  width: 100px;
-  height: 145px;
-  border: 2px dashed rgba(0, 0, 0, 0.4);
-  border-radius: 5px;
-  display: inline-block;
-  vertical-align: top;
-  margin: 10px;
-  position: relative;
+.tableau-pile, .foundation {
+    border: 2px dashed #888;
+    width: 120px;   /* match your card width */
+    height: 180px;  /* match your card height */
+    margin: 10px;
+    display: inline-block;
+    vertical-align: top;
+    position: relative;  /* important for absolute children */
 }
+
+.card {
+    width: 100%;
+    height: auto;
+    position: absolute;  /* allow card to move inside pile */
+    top: 0;
+    left: 0;
+    cursor: grab;
+}
+
 
 /* Foundation slots */
 .foundation {
@@ -50,6 +58,7 @@ body {
   padding-top: 5px;
   background-color: rgba(255, 255, 255, 0.3);
 }
+
 
 
 
