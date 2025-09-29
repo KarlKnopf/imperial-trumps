@@ -1,11 +1,12 @@
 // ----------------------
-// CONFIG
+// GLOBAL VARIABLES
 // ----------------------
 const backImg = "images/back/card78.png";
-
 let deck = [];
 
-// ---- Build deck ----
+// ----------------------
+// BUILD DECK
+// ----------------------
 function buildDeck() {
     // Major Arcana 0-21
     for (let i = 0; i <= 21; i++) {
@@ -29,7 +30,9 @@ function buildDeck() {
     }
 }
 
-// ---- Shuffle ----
+// ----------------------
+// SHUFFLE DECK
+// ----------------------
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -39,129 +42,151 @@ function shuffle(array) {
 }
 
 // ----------------------
-// INIT
+// DRAG BEHAVIOR
 // ----------------------
-window.addEventListener("DOMContentLoaded", () => {
-    buildDeck();
-    deck = shuffle(deck);
+function addDragBehavior(card) {
+    card.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData("text/plain", JSON.stringify({
+            type: card.dataset.type,
+            rank: card.dataset.rank,
+            src: card.src
+        }));
+    });
+}
 
-    const stockDiv = document.getElementById("stock");
-    const tableauDiv = document.getElementById("tableau");
-    const foundationsDiv = document.getElementById("foundations");
+// ----------------------
+// INITIALIZE GAME
+// ----------------------
+buildDeck();
+deck = shuffle(deck);
+let stockStack = [...deck];
 
-    // ----------------------
-    // STOCK
-    // ----------------------
-    let stockStack = [...deck]; // copy of shuffled deck
+const stockDiv = document.getElementById("stock");
+const tableauDiv = document.getElementById("tableau");
+const foundationsDiv = document.getElementById("foundations");
 
-    function renderStock() {
-        stockDiv.innerHTML = ""; // clear previous
-        if (stockStack.length === 0) return;
+// ----------------------
+// RENDER STOCK
+// ----------------------
+function renderStock() {
+    stockDiv.innerHTML = ""; // clear
+    if (stockStack.length === 0) return;
 
-        const topCard = stockStack[stockStack.length - 1];
-        const img = document.createElement("img");
-        img.src = backImg;
-        img.dataset.front = topCard.img;
-        img.dataset.type = topCard.type;
-        img.dataset.rank = topCard.rank;
-        img.classList.add("card");
+    const topCard = stockStack[stockStack.length - 1];
+    const img = document.createElement("img");
+    img.src = backImg;
+    img.dataset.front = topCard.img;
+    img.dataset.type = topCard.type;
+    img.dataset.rank = topCard.rank;
+    img.classList.add("card");
+    img.setAttribute("draggable", "true");
 
-        img.addEventListener("click", () => {
-            img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
-        });
+    addDragBehavior(img);
 
-        stockDiv.appendChild(img);
-    }
-
-    renderStock();
-
-    // ----------------------
-    // TABLEAU (7 piles)
-    // ----------------------
-    for (let i = 0; i < 7; i++) {
-        const pile = document.createElement("div");
-        pile.classList.add("tableau-pile");
-        pile.innerHTML = `<strong>Pile ${i + 1}</strong>`;
-        pile.style.marginRight = "20px"; // spacing between piles
-        pile.style.display = "inline-block";
-        pile.style.verticalAlign = "top";
-        pile.style.width = "120px";
-        pile.style.height = "200px";
-        pile.style.border = "2px dashed #999";
-        pile.style.position = "relative";
-
-        // Deal one face-down card from stock to each pile
-        if (stockStack.length > 0) {
-            const cardData = stockStack.pop();
-            const card = document.createElement("img");
-            card.src = backImg;
-            card.dataset.front = cardData.img;
-            card.dataset.type = cardData.type;
-            card.dataset.rank = cardData.rank;
-            card.classList.add("card");
-            card.style.position = "absolute";
-            card.style.top = "20px";
-            card.style.left = "0px";
-            card.style.width = "100px";
-            card.style.height = "150px";
-            card.setAttribute("draggable", "true");
-            addDragBehavior(card);
-
-            pile.appendChild(card);
-        }
-
-        // Drag & drop events for pile
-        pile.addEventListener("dragover", (e) => e.preventDefault());
-        pile.addEventListener("drop", (e) => {
-            e.preventDefault();
-            const cardData = JSON.parse(e.dataTransfer.getData("text/plain"));
-            const droppedCard = document.createElement("img");
-            droppedCard.src = cardData.src;
-            droppedCard.dataset.type = cardData.type;
-            droppedCard.dataset.rank = cardData.rank;
-            droppedCard.classList.add("card");
-            droppedCard.style.position = "absolute";
-            droppedCard.style.top = "20px";
-            droppedCard.style.left = "0px";
-            droppedCard.style.width = "100px";
-            droppedCard.style.height = "150px";
-            droppedCard.setAttribute("draggable", "true");
-            addDragBehavior(droppedCard);
-
-            pile.appendChild(droppedCard);
-        });
-
-        tableauDiv.appendChild(pile);
-    }
-
-    // ----------------------
-    // FOUNDATIONS (5 suits)
-    // ----------------------
-    const foundationSuits = ["keys", "cups", "swords", "pentacles", "major"];
-    foundationSuits.forEach(suit => {
-        const f = document.createElement("div");
-        f.classList.add("foundation");
-        f.dataset.suit = suit;
-        f.innerHTML = `<strong>${suit.toUpperCase()}</strong>`;
-        f.style.display = "inline-block";
-        f.style.width = "120px";
-        f.style.height = "180px";
-        f.style.border = "2px dashed #999";
-        f.style.marginRight = "20px";
-        f.style.verticalAlign = "top";
-        foundationsDiv.appendChild(f);
+    img.addEventListener("click", () => {
+        img.src = img.src.includes(backImg) ? img.dataset.front : backImg;
+        // draw card logic
+        stockStack.pop();
+        renderStock();
     });
 
-    // ----------------------
-    // DRAG BEHAVIOR
-    // ----------------------
-    function addDragBehavior(card) {
-        card.addEventListener("dragstart", (e) => {
-            e.dataTransfer.setData("text/plain", JSON.stringify({
-                type: card.dataset.type,
-                rank: card.dataset.rank,
-                src: card.src
-            }));
-        });
+    stockDiv.appendChild(img);
+}
+
+// ----------------------
+// CREATE TABLEAU (7 piles, fanned cards)
+// ----------------------
+for (let pileIndex = 0; pileIndex < 7; pileIndex++) {
+    const pile = document.createElement("div");
+    pile.classList.add("tableau-pile");
+    pile.style.display = "inline-block";
+    pile.style.width = "120px";
+    pile.style.height = "600px";
+    pile.style.border = "2px dashed #999";
+    pile.style.marginRight = "20px";
+    pile.style.position = "relative";
+
+    // Deal cards into pile (Klondike style)
+    for (let i = 0; i <= pileIndex; i++) {
+        if (stockStack.length === 0) break;
+        const cardData = stockStack.pop();
+        const card = document.createElement("img");
+        card.src = i === pileIndex ? cardData.img : backImg; // only top card face-up
+        card.dataset.front = cardData.img;
+        card.dataset.type = cardData.type;
+        card.dataset.rank = cardData.rank;
+        card.classList.add("card");
+        card.setAttribute("draggable", "true");
+        card.style.position = "absolute";
+        card.style.top = `${i * 30}px`;
+        card.style.left = "0px";
+        card.style.width = "100px";
+        card.style.height = "150px";
+        addDragBehavior(card);
+        pile.appendChild(card);
     }
+
+    // Drag & drop behavior for pile
+    pile.addEventListener("dragover", (e) => e.preventDefault());
+    pile.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const cardData = JSON.parse(e.dataTransfer.getData("text/plain"));
+        const droppedCard = document.createElement("img");
+        droppedCard.src = cardData.src;
+        droppedCard.dataset.type = cardData.type;
+        droppedCard.dataset.rank = cardData.rank;
+        droppedCard.classList.add("card");
+        droppedCard.setAttribute("draggable", "true");
+        addDragBehavior(droppedCard);
+        // stack new card with offset
+        droppedCard.style.position = "absolute";
+        droppedCard.style.top = `${pile.children.length * 30}px`;
+        droppedCard.style.left = "0px";
+        droppedCard.style.width = "100px";
+        droppedCard.style.height = "150px";
+        pile.appendChild(droppedCard);
+        stockStack = stockStack.filter(c => !(c.type === cardData.type && c.rank == cardData.rank));
+        renderStock();
+    });
+
+    tableauDiv.appendChild(pile);
+}
+
+// ----------------------
+// CREATE FOUNDATIONS
+// ----------------------
+const foundationSuits = ["keys", "cups", "swords", "pentacles", "major"];
+foundationSuits.forEach(suit => {
+    const f = document.createElement("div");
+    f.classList.add("foundation");
+    f.dataset.suit = suit;
+    f.style.display = "inline-block";
+    f.style.width = "120px";
+    f.style.height = "180px";
+    f.style.border = "2px dashed #333";
+    f.style.marginRight = "20px";
+    f.style.textAlign = "center";
+    f.innerHTML = `<strong>${suit.toUpperCase()}</strong>`;
+    foundationsDiv.appendChild(f);
+
+    f.addEventListener("dragover", (e) => e.preventDefault());
+    f.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const cardData = JSON.parse(e.dataTransfer.getData("text/plain"));
+        const droppedCard = document.createElement("img");
+        droppedCard.src = cardData.src;
+        droppedCard.dataset.type = cardData.type;
+        droppedCard.dataset.rank = cardData.rank;
+        droppedCard.classList.add("card");
+        droppedCard.setAttribute("draggable", "true");
+        addDragBehavior(droppedCard);
+        f.appendChild(droppedCard);
+        stockStack = stockStack.filter(c => !(c.type === cardData.type && c.rank == cardData.rank));
+        renderStock();
+    });
 });
+
+// ----------------------
+// START GAME
+// ----------------------
+renderStock();
