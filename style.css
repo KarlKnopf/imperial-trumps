@@ -1,52 +1,52 @@
 body {
     font-family: sans-serif;
-    background-color: #f4f4f4;
-    text-align: center;
-}
-
-#game-board {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 20px;
-}
-
-#stock-container, #tableau-container, #foundations-container {
-    border: 1px solid #ccc;
-    padding: 10px;
-    min-width: 150px;
-    min-height: 300px;
-    background-color: #fff;
+    background-color: #1a1a1a;
+    color: #fff;
+    padding: 20px;
 }
 
 #stock, #tableau, #foundations {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
+    margin-bottom: 20px;
 }
 
-.tableau-pile, .foundation {
-    position: relative;      /* so child cards are positioned relative to this div */
-    width: 120px;            /* adjust to match your card width */
-    height: 300px;           /* adjust to allow fanning */
-    margin: 10px;
+/* Stock area */
+#stock {
+    display: inline-block;
+    width: 120px;
+    height: 180px;
     border: 2px dashed #888;
-    display: inline-block;   /* makes piles sit side by side */
     vertical-align: top;
 }
 
-
-.card {
-    width: 100px;
-    height: 150px;
-    cursor: pointer;
-    position: absolute; /* allows dragging without overlapping layout */
+/* Tableau piles */
+.tableau-pile {
+    position: relative;
+    width: 120px;
+    height: 300px;
+    margin: 10px;
+    border: 2px dashed #888;
+    display: inline-block;
+    vertical-align: top;
 }
 
+/* Foundations */
+.foundation {
+    position: relative;
+    width: 120px;
+    height: 180px;
+    margin: 10px;
+    border: 2px dashed #888;
+    display: inline-block;
+    vertical-align: top;
+    text-align: center;
+}
 
-
-
-
-
-
-
+/* Cards */
+.card {
+    width: 100px;     /* fixed width */
+    height: 150px;    /* fixed height */
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
